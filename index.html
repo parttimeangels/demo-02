@@ -3,39 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>파트타임엔젤 </title>
+  <title>파트타임엔젤 테스트</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-  <!-- 퀴즈(초기: 보임) -->
-  <section id="quiz" class="container">
-    <h1>어쩌면 나도, 누군가의 파트타임엔젤일지도?</h1>
-    <p class="lead">질문에 답하면 숨겨진 엔젤파워를 분석해 드립니다.</p>
+  <!-- 퀴즈 -->
+  <main id="quiz" class="container">
+    <header class="header">
+      <h1>어쩌면 나도, 누군가의 파트타임엔젤일지도?</h1>
+      <p class="lead">15개의 질문에 답하면 당신의 숨겨진 엔젤파워를 분석해 드립니다.</p>
+    </header>
 
-    <div id="question-box" class="question"></div>
-    <div id="options" class="options"></div>
+    <section class="quiz-box">
+      <div id="question-box" class="question"></div>
+      <div id="options" class="options"></div>
+    </section>
 
-    <div id="nav-buttons">
-      <button id="prevBtn" type="button">이전</button>
-      <button id="nextBtn" type="button" disabled>다음</button>
-    </div>
-  </section>
+    <nav class="nav-buttons">
+      <button id="prevBtn" type="button" class="btn">이전</button>
+      <button id="nextBtn" type="button" class="btn primary" disabled>다음</button>
+    </nav>
+  </main>
 
-  <!-- 결과(초기: 숨김) -->
+  <!-- 결과 -->
   <section id="result" class="container hidden" aria-hidden="true">
-    <h2>당신의 엔젤파워는</h2>
-    <div id="best-match"></div>
+    <header class="header">
+      <h2>✨ 당신의 엔젤파워 결과 ✨</h2>
+    </header>
 
-    <h3>당신의 다른 능력</h3>
-    <div id="other-matches"></div>
+    <article id="best-match" class="card highlight"></article>
+
+    <h3>다른 능력</h3>
+    <div id="other-matches" class="grid"></div>
 
     <div class="center mt-20">
-      <button id="restartBtn" type="button">처음부터 다시하기</button>
+      <button id="restartBtn" type="button" class="btn">처음부터 다시하기</button>
     </div>
   </section>
 
-  <!-- 스크립트: body 닫기 직전 / 캐시버스터 -->
-  <script src="./app.js?v=majority-1" defer></script>
+  <!-- 스크립트 -->
+  <script src="./app.js?v=2" defer></script>
 </body>
 </html>
