@@ -8,11 +8,11 @@
 </head>
 <body>
 
-  <!-- 퀴즈 -->
+  <!-- 퀴즈 화면 -->
   <main id="quiz" class="container">
     <header class="header">
       <h1>나는 어떤 유형의 엔젤일까?</h1>
-      <p class="lead"> 발벗고 도와주거나, 묵묵히 바라보거나, 대신 맞서거나 </p>
+      <p class="lead">발 벗고 도와주거나, 묵묵히 바라보거나, 대신 맞서거나</p>
     </header>
 
     <section class="quiz-box">
@@ -26,23 +26,20 @@
     </nav>
   </main>
 
-  <!-- 결과 -->
+  <!-- 결과 화면 -->
   <section id="result" class="container hidden" aria-hidden="true">
-    <header class="header">
-      <h2>✨ 당신의 엔젤파워 결과 ✨</h2>
-    </header>
+    <h2>당신의 엔젤 파워는</h2>
+    <div id="best-match" class="result-main"></div>
 
-    <article id="best-match" class="card highlight"></article>
-
-    <h3>다른 능력</h3>
-    <div id="other-matches" class="grid"></div>
+    <h3>다른 잠재된 능력</h3>
+    <div id="other-matches" class="result-sub"></div>
 
     <div class="center mt-20">
       <button id="restartBtn" type="button" class="btn">처음부터 다시하기</button>
     </div>
   </section>
 
-  <!-- 스크립트 -->
+  <!-- JS: 캐시 문제 방지용 버전 넘버 붙임 -->
   <script src="./app.js?v=2" defer></script>
 </body>
 </html>
