@@ -1,43 +1,61 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>나는 어떤 유형의 엔젤일까?</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>엔젤 심리테스트</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="quiz" class="container">
-    <header class="header">
-      <h1>나는 어떤 유형의 엔젤일까?</h1>
-      <p class="lead">발 벗고 도와주거나, 묵묵히 바라보거나, 대신 맞서거나</p>
-    </header>
+  <!-- 질문 영역 -->
+  <div class="quiz-container" id="quiz-container">
+    <h1>엔젤 심리테스트</h1>
+    <div id="question-container"></div>
 
-    <!-- 질문 박스 -->
-    <section id="question-box" class="question"></section>
-    <div id="options" class="options"></div>
-
-    <!-- 네비게이션 버튼 -->
-    <div id="nav-buttons">
-      <button id="prevBtn" type="button">이전</button>
-      <button id="nextBtn" type="button" disabled>다음</button>
+    <div id="navigation">
+      <button id="prev-btn" disabled>이전</button>
+      <button id="next-btn">다음</button>
+      <button id="submit-btn" style="display:none;">결과 보기</button>
     </div>
-  </main>
+  </div>
 
-  <!-- 결과 화면 -->
-  <section id="result" class="container hidden" aria-hidden="true">
+  <!-- 결과 영역 -->
+  <div id="result-container" style="display:none;">
     <h2>당신의 엔젤 유형</h2>
-    <div id="best-match"></div>
 
-    <h3>다른 가능성</h3>
-    <div id="other-matches"></div>
+    <!-- 주요 결과 -->
+    <div id="result-title" class="result-title"></div>
+    <div id="result-description" class="result-description"></div>
+    <div id="result-keywords" class="result-keywords"></div>
+    <div id="result-growth" class="result-growth"></div>
 
-    <div class="center mt-20">
-      <button id="restartBtn" type="button">처음부터 다시하기</button>
+    <!-- 막대그래프 -->
+    <div class="result-bars">
+      <h3>세부 성향 점수</h3>
+      <div class="bar-item">
+        <span>순응</span>
+        <div class="bar"><div class="fill" id="score-sunung">0%</div></div>
+      </div>
+      <div class="bar-item">
+        <span>맞섬</span>
+        <div class="bar"><div class="fill" id="score-matsum">0%</div></div>
+      </div>
+      <div class="bar-item">
+        <span>회피</span>
+        <div class="bar"><div class="fill" id="score-hoepi">0%</div></div>
+      </div>
+      <div class="bar-item">
+        <span>균형</span>
+        <div class="bar"><div class="fill" id="score-gyunhyung">0%</div></div>
+      </div>
     </div>
-  </section>
 
-  <!-- JS -->
-  <script src="app.js?v=20250821-1" defer></script>
+    <!-- 다른 가능성 (보조 엔젤) -->
+    <div id="alt-results" class="alt-results"></div>
+
+    <button id="restart-btn">처음부터 다시하기</button>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
