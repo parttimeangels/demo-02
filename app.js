@@ -1,4 +1,4 @@
-// app.js (완성형)
+// app.js (개선형)
 
 // Google Sheet API 설정
 const SHEET_ID = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
@@ -26,16 +26,27 @@ const restartBtn = document.getElementById("restartBtn");
 async function loadQuiz() {
   try {
     const response = await fetch(SHEET_URL);
+    if (!response.ok) throw new Error(`HTTP 오류: ${response.status}`);
+
     const text = await response.text();
     const json = JSON.parse(text.substr(47).slice(0, -2)); // 구글시트 JSON 파싱
+
+    if (!json.table || !json.table.rows) throw new Error("시트 데이터가 비어있습니다.");
+
     quizData = json.table.rows.map(r => ({
       no: r.c[0]?.v,
       quiz: r.c[1]?.v,
       type: r.c[2]?.v
     }));
+
+    if (quizData.length === 0) throw new Error("질문 데이터가 로드되지 않았습니다.");
+
     showQuestion();
   } catch (error) {
     console.error("구글 시트 로드 오류:", error);
+    questionBox.textContent = "⚠️ 질문을 불러오지 못했습니다. 시트 공유 설정을 확인하세요.";
+    optionsBox.innerHTML = "";
+    nextBtn.disabled = true;
   }
 }
 
@@ -43,6 +54,7 @@ async function loadQuiz() {
 async function loadAngels() {
   try {
     const res = await fetch("./angels.json");
+    if (!res.ok) throw new Error(`HTTP 오류: ${res.status}`);
     angelsData = await res.json();
   } catch (error) {
     console.error("angels.json 로드 오류:", error);
@@ -51,7 +63,11 @@ async function loadAngels() {
 
 // 3. 질문 표시
 function showQuestion() {
+  if (!quizData.length) return;
+
   const q = quizData[currentQuestion];
+  if (!q) return;
+
   questionBox.textContent = `${q.no}. ${q.quiz}`;
 
   optionsBox.innerHTML = "";
@@ -103,12 +119,13 @@ function calculateResult() {
 
   quizData.forEach((q, i) => {
     const ans = userAnswers[i];
-    if (q.type && ans) {
-      score[q.type] += ans;
+    if (q?.type && ans) {
+      if (score[q.type] !== undefined) {
+        score[q.type] += ans;
+      }
     }
   });
 
-  // 주요/보조 성향 판별
   const sorted = Object.entries(score).sort((a, b) => b[1] - a[1]);
   const mainType = sorted[0][0]; // 1순위
   const subType = sorted[1][0];  // 2순위
@@ -123,22 +140,29 @@ function showResult(typeKey, sortedScores) {
   resultSection.classList.remove("hidden");
 
   const best = angelsData[typeKey];
+
+  if (!best) {
+    bestMatchBox.innerHTML = `<p>⚠️ 결과 데이터를 찾을 수 없습니다. (typeKey: ${typeKey})</p>`;
+    return;
+  }
+
   bestMatchBox.innerHTML = `
-    <h3>${best.title}</h3>
-    <p>${best.description}</p>
-    <p><strong>키워드:</strong> ${best.keywords.join(", ")}</p>
-    <p><strong>성장방향:</strong> ${best.growth}</p>
+    <h3>${best.title || "제목 없음"}</h3>
+    <p>${best.description || "설명이 없습니다."}</p>
+    <p><strong>키워드:</strong> ${(best.keywords || []).join(", ")}</p>
+    <p><strong>성장방향:</strong> ${best.growth || "정보 없음"}</p>
   `;
 
   otherMatchesBox.innerHTML = "";
-  sortedScores.slice(1).forEach(([k, v]) => {
-    const altKey = k + sortedScores.find(([x]) => x !== k)[0]; 
+  sortedScores.slice(1).forEach(([k]) => {
+    // 보조 추천 key 구성
+    const altKey = k + sortedScores[0][0]; // ex) 서브+메인
     if (angelsData[altKey]) {
       const alt = angelsData[altKey];
       const div = document.createElement("div");
       div.innerHTML = `
-        <h4>${alt.title}</h4>
-        <p>${alt.description}</p>
+        <h4>${alt.title || "제목 없음"}</h4>
+        <p>${alt.description || "설명 없음"}</p>
       `;
       otherMatchesBox.appendChild(div);
     }
