@@ -1,81 +1,89 @@
+// Google Spreadsheet CSV URL
+const sheetUrl = "https://docs.google.com/spreadsheets/d/1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE/export?format=csv";
+
+let questions = [];
 let currentQuestion = 0;
-let answers = [];
+let answers = { G: 0, T: 0, A: 0 };
 
-// 질문 예시 (추후 JSON으로 분리 가능)
-const questions = [
-  { text: "조화와 균형을 중시하시나요?", options: ["예", "아니오"] },
-  { text: "상대방의 감정을 쉽게 공감하시나요?", options: ["예", "아니오"] },
-  { text: "불편해도 필요한 말은 직접 하나요?", options: ["예", "아니오"] }
-];
+// 질문 로드
+async function loadQuestions() {
+  try {
+    const response = await fetch(sheetUrl);
+    const data = await response.text();
 
-const questionEl = document.getElementById("question");
-const answersEl = document.getElementById("answers");
-const nextBtn = document.getElementById("next-btn");
-const resultEl = document.getElementById("result");
-const resultTitle = document.getElementById("result-title");
-const resultDescription = document.getElementById("result-description");
-const resultGrowth = document.getElementById("result-growth");
+    const rows = data.split("\n").map(r => r.split(","));
+    // 헤더 제외
+    questions = rows.slice(1).map(r => ({
+      text: r[0].trim(),   // 질문
+      optionA: r[1]?.trim(),
+      optionB: r[2]?.trim(),
+      optionC: r[3]?.trim(),
+      optionD: r[4]?.trim(),
+      dimension: r[5]?.trim()
+    }));
 
-function loadQuestion() {
+    startQuiz();
+  } catch (err) {
+    console.error("질문 로드 오류:", err);
+    document.getElementById("question").textContent = "질문을 불러오지 못했습니다.";
+  }
+}
+
+// 퀴즈 시작
+function startQuiz() {
+  currentQuestion = 0;
+  showQuestion();
+}
+
+// 질문 표시
+function showQuestion() {
+  if (currentQuestion >= questions.length) {
+    showResult();
+    return;
+  }
+
   const q = questions[currentQuestion];
-  questionEl.textContent = q.text;
-  answersEl.innerHTML = "";
-  q.options.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.textContent = opt;
-    btn.onclick = () => {
-      answers[currentQuestion] = opt;
-    };
-    answersEl.appendChild(btn);
+
+  // 질문 텍스트
+  document.getElementById("question").textContent = q.text;
+
+  // 진행상황 (예: 3/30)
+  document.getElementById("progress").textContent = `${currentQuestion + 1} / ${questions.length}`;
+
+  // 보기 버튼 채우기
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  ["A", "B", "C", "D"].forEach((key, idx) => {
+    if (q[`option${key}`]) {
+      const btn = document.createElement("button");
+      btn.textContent = q[`option${key}`];
+      btn.className = "option-btn";
+      btn.onclick = () => selectAnswer(key, q.dimension);
+      optionsDiv.appendChild(btn);
+    }
   });
 }
 
-nextBtn.addEventListener("click", () => {
-  if (answers[currentQuestion] == null) {
-    alert("답변을 선택하세요!");
-    return;
+// 답변 선택
+function selectAnswer(option, dimension) {
+  if (dimension && answers[dimension] !== undefined) {
+    answers[dimension] += 1; // 간단히 점수 +1 (추후 가중치 반영 가능)
   }
+
   currentQuestion++;
-  if (currentQuestion < questions.length) {
-    loadQuestion();
-  } else {
-    showResult();
-  }
-});
-
-function calculateResultKey() {
-  // 아주 단순한 로직 (테스트용)
-  // 실제는 점수 계산 방식 넣어야 함
-  if (answers[0] === "예" && answers[1] === "예") return "GG";
-  if (answers[0] === "예" && answers[2] === "예") return "GT";
-  return "AA"; // 기본값
+  showQuestion();
 }
 
-async function showResult() {
-  try {
-    const res = await fetch("angels.json");
-    const data = await res.json();
-
-    const resultKey = calculateResultKey();
-    const angel = data[resultKey];
-
-    if (!angel) {
-      resultTitle.textContent = "결과를 불러올 수 없습니다.";
-      resultDescription.textContent = "";
-      return;
-    }
-
-    resultTitle.textContent = angel.title;
-    resultDescription.textContent = angel.description;
-    resultGrowth.textContent = angel.growth;
-
-    document.getElementById("quiz-container").style.display = "none";
-    resultEl.style.display = "block";
-  } catch (e) {
-    console.error(e);
-    resultTitle.textContent = "에러 발생!";
-  }
+// 결과 표시
+function showResult() {
+  document.getElementById("quiz-container").innerHTML = `
+    <h2>결과</h2>
+    <p>공감(G): ${answers.G}</p>
+    <p>맞섬(T): ${answers.T}</p>
+    <p>회피/균형(A): ${answers.A}</p>
+  `;
 }
 
-// 초기 로드
-loadQuestion();
+// 페이지 로드 시 실행
+window.onload = loadQuestions;
