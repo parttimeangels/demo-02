@@ -1,151 +1,61 @@
-/* style.css (전체 완성형) */
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>엔젤 심리테스트</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 질문 영역 -->
+  <div class="quiz-container" id="quiz-container">
+    <h1>엔젤 심리테스트</h1>
+    <div id="question-container"></div>
 
-/* 공통 레이아웃 */
-body {
-  font-family: "Noto Sans KR", Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f6f9;
-  color: #333;
-  line-height: 1.6;
-}
+    <div id="navigation">
+      <button id="prev-btn" disabled>이전</button>
+      <button id="next-btn">다음</button>
+      <button id="submit-btn" style="display:none;">결과 보기</button>
+    </div>
+  </div>
 
-.container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 20px;
-}
+  <!-- 결과 영역 -->
+  <div id="result-container" style="display:none;">
+    <h2>당신의 엔젤 유형</h2>
 
-/* 헤더 */
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-}
+    <!-- 주요 결과 -->
+    <div id="result-title" class="result-title"></div>
+    <div id="result-description" class="result-description"></div>
+    <div id="result-keywords" class="result-keywords"></div>
+    <div id="result-growth" class="result-growth"></div>
 
-.header h1 {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-}
+    <!-- 막대그래프 -->
+    <div class="result-bars">
+      <h3>세부 성향 점수</h3>
+      <div class="bar-item">
+        <span>순응</span>
+        <div class="bar"><div class="fill" id="score-sunung">0%</div></div>
+      </div>
+      <div class="bar-item">
+        <span>맞섬</span>
+        <div class="bar"><div class="fill" id="score-matsum">0%</div></div>
+      </div>
+      <div class="bar-item">
+        <span>회피</span>
+        <div class="bar"><div class="fill" id="score-hoepi">0%</div></div>
+      </div>
+      <div class="bar-item">
+        <span>균형</span>
+        <div class="bar"><div class="fill" id="score-gyunhyung">0%</div></div>
+      </div>
+    </div>
 
-.header .lead {
-  font-size: 1rem;
-  color: #666;
-}
+    <!-- 다른 가능성 (보조 엔젤) -->
+    <div id="alt-results" class="alt-results"></div>
 
-/* 질문 박스 */
-#question-box {
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-  font-weight: bold;
-  text-align: center;
-}
+    <button id="restart-btn">처음부터 다시하기</button>
+  </div>
 
-/* 선택지 버튼 */
-#options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.option-btn {
-  padding: 12px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #fff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.option-btn:hover {
-  background-color: #f0f0f0;
-}
-
-.option-btn.selected {
-  background-color: #4a90e2;
-  color: white;
-  border-color: #357ab8;
-}
-
-/* 네비게이션 버튼 */
-.nav-btns {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-/* 결과 섹션 */
-.hidden {
-  display: none;
-}
-
-#result {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-#result h2 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-/* 베스트 매칭 */
-#best-match {
-  padding: 20px;
-  background: #eaf4ff;
-  border-left: 5px solid #4a90e2;
-  border-radius: 8px;
-  margin-bottom: 25px;
-}
-
-#best-match h3 {
-  margin-top: 0;
-  font-size: 1.3rem;
-  color: #357ab8;
-}
-
-#best-match p {
-  margin: 8px 0;
-}
-
-/* 다른 매칭 */
-#other-matches h4 {
-  margin-bottom: 5px;
-  color: #444;
-}
-
-#other-matches div {
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
-}
-
-#other-matches div:last-child {
-  border-bottom: none;
-}
-
-/* 다시하기 버튼 */
-#restartBtn {
-  display: block;
-  margin: 25px auto 0 auto;
-  padding: 12px 20px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  background-color: #4a90e2;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-#restartBtn:hover {
-  background-color: #357ab8;
-}
+  <script src="app.js"></script>
+</body>
+</html>
