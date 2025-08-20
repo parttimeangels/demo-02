@@ -1,183 +1,169 @@
-// app.js (개선형)
+document.addEventListener("DOMContentLoaded", () => {
+  // Google Sheet API 설정
+  const SHEET_ID = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
+  const QUIZ_RANGE = "quiz!A2:C";
+  const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&range=${QUIZ_RANGE}`;
 
-// Google Sheet API 설정
-const SHEET_ID = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
-const QUIZ_RANGE = "quiz!A2:C"; // no, quiz, type
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&range=${QUIZ_RANGE}`;
+  let quizData = [];
+  let currentQuestion = 0;
+  let userAnswers = [];
+  let angelsData = {};
 
-let quizData = [];
-let currentQuestion = 0;
-let userAnswers = [];
+  // DOM 요소
+  const questionBox = document.getElementById("question-box");
+  const optionsBox = document.getElementById("options");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const resultSection = document.getElementById("result");
+  const quizSection = document.getElementById("quiz");
+  const bestMatchBox = document.getElementById("best-match");
+  const otherMatchesBox = document.getElementById("other-matches");
+  const restartBtn = document.getElementById("restartBtn");
+  const scoreCanvas = document.getElementById("scoreChart");
 
-let angelsData = {}; // angels.json 데이터 담을 곳
+  // 1. 구글 시트에서 질문 불러오기
+  async function loadQuiz() {
+    try {
+      const response = await fetch(SHEET_URL);
+      const text = await response.text();
+      const json = JSON.parse(text.substr(47).slice(0, -2));
+      quizData = json.table.rows.map(r => ({
+        no: r.c[0]?.v,
+        quiz: r.c[1]?.v,
+        type: r.c[2]?.v
+      }));
+      showQuestion();
+    } catch (error) {
+      console.error("구글 시트 로드 오류:", error);
+    }
+  }
 
-// DOM 요소
-const questionBox = document.getElementById("question-box");
-const optionsBox = document.getElementById("options");
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
-const resultSection = document.getElementById("result");
-const quizSection = document.getElementById("quiz");
-const bestMatchBox = document.getElementById("best-match");
-const otherMatchesBox = document.getElementById("other-matches");
-const restartBtn = document.getElementById("restartBtn");
+  // 2. angels.json 불러오기
+  async function loadAngels() {
+    try {
+      const res = await fetch("./angels.json");
+      angelsData = await res.json();
+    } catch (error) {
+      console.error("angels.json 로드 오류:", error);
+    }
+  }
 
-// 1. 구글 시트에서 질문 불러오기
-async function loadQuiz() {
-  try {
-    const response = await fetch(SHEET_URL);
-    if (!response.ok) throw new Error(`HTTP 오류: ${response.status}`);
+  // 3. 질문 표시
+  function showQuestion() {
+    const q = quizData[currentQuestion];
+    questionBox.textContent = `${q.no}. ${q.quiz}`;
 
-    const text = await response.text();
-    const json = JSON.parse(text.substr(47).slice(0, -2)); // 구글시트 JSON 파싱
-
-    if (!json.table || !json.table.rows) throw new Error("시트 데이터가 비어있습니다.");
-
-    quizData = json.table.rows.map(r => ({
-      no: r.c[0]?.v,
-      quiz: r.c[1]?.v,
-      type: r.c[2]?.v
-    }));
-
-    if (quizData.length === 0) throw new Error("질문 데이터가 로드되지 않았습니다.");
-
-    showQuestion();
-  } catch (error) {
-    console.error("구글 시트 로드 오류:", error);
-    questionBox.textContent = "⚠️ 질문을 불러오지 못했습니다. 시트 공유 설정을 확인하세요.";
     optionsBox.innerHTML = "";
-    nextBtn.disabled = true;
-  }
-}
+    const options = ["전혀 그렇지 않다", "그렇지 않다", "보통이다", "그렇다", "매우 그렇다"];
 
-// 2. angels.json 불러오기
-async function loadAngels() {
-  try {
-    const res = await fetch("./angels.json");
-    if (!res.ok) throw new Error(`HTTP 오류: ${res.status}`);
-    angelsData = await res.json();
-  } catch (error) {
-    console.error("angels.json 로드 오류:", error);
-  }
-}
-
-// 3. 질문 표시
-function showQuestion() {
-  if (!quizData.length) return;
-
-  const q = quizData[currentQuestion];
-  if (!q) return;
-
-  questionBox.textContent = `${q.no}. ${q.quiz}`;
-
-  optionsBox.innerHTML = "";
-  const options = ["전혀 그렇지 않다", "그렇지 않다", "보통이다", "그렇다", "매우 그렇다"];
-
-  options.forEach((opt, idx) => {
-    const btn = document.createElement("button");
-    btn.textContent = opt;
-    btn.className = "option-btn";
-    btn.onclick = () => selectAnswer(idx + 1); // 점수 = 1~5
-    if (userAnswers[currentQuestion] === idx + 1) {
-      btn.classList.add("selected");
-    }
-    optionsBox.appendChild(btn);
-  });
-
-  prevBtn.disabled = currentQuestion === 0;
-  nextBtn.disabled = !userAnswers[currentQuestion];
-  nextBtn.textContent = currentQuestion === quizData.length - 1 ? "결과보기" : "다음";
-}
-
-// 4. 답변 선택
-function selectAnswer(score) {
-  userAnswers[currentQuestion] = score;
-  showQuestion();
-  nextBtn.disabled = false;
-}
-
-// 5. 다음 / 이전 버튼
-nextBtn.addEventListener("click", () => {
-  if (currentQuestion < quizData.length - 1) {
-    currentQuestion++;
-    showQuestion();
-  } else {
-    calculateResult();
-  }
-});
-
-prevBtn.addEventListener("click", () => {
-  if (currentQuestion > 0) {
-    currentQuestion--;
-    showQuestion();
-  }
-});
-
-// 6. 점수 계산
-function calculateResult() {
-  const score = { G: 0, T: 0, A: 0 };
-
-  quizData.forEach((q, i) => {
-    const ans = userAnswers[i];
-    if (q?.type && ans) {
-      if (score[q.type] !== undefined) {
-        score[q.type] += ans;
+    options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.className = "option-btn";
+      btn.onclick = () => selectAnswer(idx + 1);
+      if (userAnswers[currentQuestion] === idx + 1) {
+        btn.classList.add("selected");
       }
-    }
-  });
+      optionsBox.appendChild(btn);
+    });
 
-  const sorted = Object.entries(score).sort((a, b) => b[1] - a[1]);
-  const mainType = sorted[0][0]; // 1순위
-  const subType = sorted[1][0];  // 2순위
-
-  const key = mainType + subType; // 예: GT, AG
-  showResult(key, sorted);
-}
-
-// 7. 결과 표시
-function showResult(typeKey, sortedScores) {
-  quizSection.classList.add("hidden");
-  resultSection.classList.remove("hidden");
-
-  const best = angelsData[typeKey];
-
-  if (!best) {
-    bestMatchBox.innerHTML = `<p>⚠️ 결과 데이터를 찾을 수 없습니다. (typeKey: ${typeKey})</p>`;
-    return;
+    prevBtn.disabled = currentQuestion === 0;
+    nextBtn.disabled = !userAnswers[currentQuestion];
+    nextBtn.textContent = currentQuestion === quizData.length - 1 ? "결과보기" : "다음";
   }
 
-  bestMatchBox.innerHTML = `
-    <h3>${best.title || "제목 없음"}</h3>
-    <p>${best.description || "설명이 없습니다."}</p>
-    <p><strong>키워드:</strong> ${(best.keywords || []).join(", ")}</p>
-    <p><strong>성장방향:</strong> ${best.growth || "정보 없음"}</p>
-  `;
+  // 4. 답변 선택
+  function selectAnswer(score) {
+    userAnswers[currentQuestion] = score;
+    showQuestion();
+    nextBtn.disabled = false;
+  }
 
-  otherMatchesBox.innerHTML = "";
-  sortedScores.slice(1).forEach(([k]) => {
-    // 보조 추천 key 구성
-    const altKey = k + sortedScores[0][0]; // ex) 서브+메인
-    if (angelsData[altKey]) {
-      const alt = angelsData[altKey];
-      const div = document.createElement("div");
-      div.innerHTML = `
-        <h4>${alt.title || "제목 없음"}</h4>
-        <p>${alt.description || "설명 없음"}</p>
-      `;
-      otherMatchesBox.appendChild(div);
+  // 5. 버튼 이벤트
+  nextBtn.addEventListener("click", () => {
+    if (currentQuestion < quizData.length - 1) {
+      currentQuestion++;
+      showQuestion();
+    } else {
+      calculateResult();
     }
   });
-}
 
-// 8. 다시하기
-restartBtn.addEventListener("click", () => {
-  userAnswers = [];
-  currentQuestion = 0;
-  quizSection.classList.remove("hidden");
-  resultSection.classList.add("hidden");
-  showQuestion();
+  prevBtn.addEventListener("click", () => {
+    if (currentQuestion > 0) {
+      currentQuestion--;
+      showQuestion();
+    }
+  });
+
+  // 6. 점수 계산
+  function calculateResult() {
+    const score = { G: 0, T: 0, A: 0 };
+
+    quizData.forEach((q, i) => {
+      const ans = userAnswers[i];
+      if (q.type && ans) score[q.type] += ans;
+    });
+
+    const sorted = Object.entries(score).sort((a, b) => b[1] - a[1]);
+    const mainType = sorted[0][0];
+    const subType = sorted[1][0];
+    const key = mainType + subType;
+
+    showResult(key, sorted);
+  }
+
+  // 7. 결과 표시
+  function showResult(typeKey, sortedScores) {
+    quizSection.classList.add("hidden");
+    resultSection.classList.remove("hidden");
+
+    const best = angelsData[typeKey];
+    if (best) {
+      bestMatchBox.innerHTML = `
+        <h3>${best.title}</h3>
+        <p>${best.description}</p>
+        <p><strong>키워드:</strong> ${best.keywords.join(", ")}</p>
+        <p><strong>성장방향:</strong> ${best.growth}</p>
+      `;
+    }
+
+    otherMatchesBox.innerHTML = "";
+    sortedScores.slice(1).forEach(([k]) => {
+      const altKey = k + sortedScores.find(([x]) => x !== k)[0];
+      if (angelsData[altKey]) {
+        const alt = angelsData[altKey];
+        const div = document.createElement("div");
+        div.innerHTML = `<h4>${alt.title}</h4><p>${alt.description}</p>`;
+        otherMatchesBox.appendChild(div);
+      }
+    });
+
+    // ✅ 막대그래프
+    new Chart(scoreCanvas, {
+      type: "bar",
+      data: {
+        labels: ["순응(G)", "맞섬(T)", "회피(A)"],
+        datasets: [{
+          label: "점수",
+          data: sortedScores.map(([_, v]) => v),
+          backgroundColor: ["#4e79a7", "#f28e2c", "#76b7b2"]
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+
+  // 8. 다시하기
+  restartBtn.addEventListener("click", () => {
+    userAnswers = [];
+    currentQuestion = 0;
+    quizSection.classList.remove("hidden");
+    resultSection.classList.add("hidden");
+    showQuestion();
+  });
+
+  // 실행
+  loadQuiz();
+  loadAngels();
 });
-
-// 실행
-loadQuiz();
-loadAngels();
