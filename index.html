@@ -3,59 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>엔젤 심리테스트</title>
+  <title>파트타임엔젤 성격유형 테스트</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 질문 영역 -->
-  <div class="quiz-container" id="quiz-container">
-    <h1>엔젤 심리테스트</h1>
-    <div id="question-container"></div>
-
-    <div id="navigation">
-      <button id="prev-btn" disabled>이전</button>
-      <button id="next-btn">다음</button>
-      <button id="submit-btn" style="display:none;">결과 보기</button>
+  <div id="quiz">
+    <div id="question-box"></div>
+    <div id="options"></div>
+    <div class="nav-buttons">
+      <button id="prevBtn">이전</button>
+      <button id="nextBtn">다음</button>
     </div>
   </div>
 
-  <!-- 결과 영역 -->
-  <div id="result-container" style="display:none;">
-    <h2>당신의 엔젤 유형</h2>
+  <div id="result" class="hidden">
+    <h2>결과</h2>
+    <div id="best-match"></div>
+    <div id="other-matches"></div>
 
-    <!-- 주요 결과 -->
-    <div id="result-title" class="result-title"></div>
-    <div id="result-description" class="result-description"></div>
-    <div id="result-keywords" class="result-keywords"></div>
-    <div id="result-growth" class="result-growth"></div>
+    <!-- ✅ 그래프 -->
+    <canvas id="scoreChart" width="400" height="200"></canvas>
 
-    <!-- 막대그래프 -->
-    <div class="result-bars">
-      <h3>세부 성향 점수</h3>
-      <div class="bar-item">
-        <span>순응</span>
-        <div class="bar"><div class="fill" id="score-sunung">0%</div></div>
-      </div>
-      <div class="bar-item">
-        <span>맞섬</span>
-        <div class="bar"><div class="fill" id="score-matsum">0%</div></div>
-      </div>
-      <div class="bar-item">
-        <span>회피</span>
-        <div class="bar"><div class="fill" id="score-hoepi">0%</div></div>
-      </div>
-      <div class="bar-item">
-        <span>균형</span>
-        <div class="bar"><div class="fill" id="score-gyunhyung">0%</div></div>
-      </div>
-    </div>
-
-    <!-- 다른 가능성 (보조 엔젤) -->
-    <div id="alt-results" class="alt-results"></div>
-
-    <button id="restart-btn">처음부터 다시하기</button>
+    <button id="restartBtn">다시하기</button>
   </div>
 
+  <!-- ✅ 반드시 body 끝에서 app.js 로드 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
