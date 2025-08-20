@@ -1,89 +1,74 @@
-// Google Spreadsheet CSV URL
-const sheetUrl = "https://docs.google.com/spreadsheets/d/1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE/export?format=csv";
-
 let questions = [];
-let currentQuestion = 0;
-let answers = { G: 0, T: 0, A: 0 };
+let currentQuestionIndex = 0;
+let answers = [];
 
-// 질문 로드
+// ✅ 구글 시트에서 데이터 불러오기
 async function loadQuestions() {
-  try {
-    const response = await fetch(sheetUrl);
-    const data = await response.text();
+  const sheetId = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
+  const sheetName = "Sheet1"; // 시트 이름 확인 필요
+  const url = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
 
-    const rows = data.split("\n").map(r => r.split(","));
-    // 헤더 제외
-    questions = rows.slice(1).map(r => ({
-      text: r[0].trim(),   // 질문
-      optionA: r[1]?.trim(),
-      optionB: r[2]?.trim(),
-      optionC: r[3]?.trim(),
-      optionD: r[4]?.trim(),
-      dimension: r[5]?.trim()
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    // 시트에서 {question, option1, option2, option3, option4} 형식으로 들어온다고 가정
+    questions = data.map(row => ({
+      question: row.question,
+      options: [row.option1, row.option2, row.option3, row.option4]
     }));
 
-    startQuiz();
-  } catch (err) {
-    console.error("질문 로드 오류:", err);
-    document.getElementById("question").textContent = "질문을 불러오지 못했습니다.";
+    showQuestion();
+  } catch (error) {
+    console.error("❌ 질문 불러오기 실패:", error);
+    document.getElementById("question").textContent = "질문을 불러올 수 없습니다.";
   }
 }
 
-// 퀴즈 시작
-function startQuiz() {
-  currentQuestion = 0;
-  showQuestion();
-}
-
-// 질문 표시
+// ✅ 질문 출력 함수
 function showQuestion() {
-  if (currentQuestion >= questions.length) {
-    showResult();
-    return;
-  }
+  const currentQ = questions[currentQuestionIndex];
 
-  const q = questions[currentQuestion];
+  // 질문 번호 progress
+  document.getElementById("progress").textContent =
+    `${currentQuestionIndex + 1}/${questions.length}`;
 
   // 질문 텍스트
-  document.getElementById("question").textContent = q.text;
+  document.getElementById("question").textContent = currentQ.question;
 
-  // 진행상황 (예: 3/30)
-  document.getElementById("progress").textContent = `${currentQuestion + 1} / ${questions.length}`;
-
-  // 보기 버튼 채우기
+  // 보기 버튼 생성
   const optionsDiv = document.getElementById("options");
   optionsDiv.innerHTML = "";
-
-  ["A", "B", "C", "D"].forEach((key, idx) => {
-    if (q[`option${key}`]) {
+  currentQ.options.forEach((opt, i) => {
+    if (opt) {
       const btn = document.createElement("button");
-      btn.textContent = q[`option${key}`];
-      btn.className = "option-btn";
-      btn.onclick = () => selectAnswer(key, q.dimension);
+      btn.textContent = opt;
+      btn.addEventListener("click", () => handleAnswer(i));
       optionsDiv.appendChild(btn);
     }
   });
 }
 
-// 답변 선택
-function selectAnswer(option, dimension) {
-  if (dimension && answers[dimension] !== undefined) {
-    answers[dimension] += 1; // 간단히 점수 +1 (추후 가중치 반영 가능)
+// ✅ 답변 처리
+function handleAnswer(optionIndex) {
+  answers.push(optionIndex);
+  currentQuestionIndex++;
+
+  if (currentQuestionIndex < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
   }
-
-  currentQuestion++;
-  showQuestion();
 }
 
-// 결과 표시
+// ✅ 결과 출력 (엔젤 추천)
 function showResult() {
-  document.getElementById("quiz-container").innerHTML = `
-    <h2>결과</h2>
-    <p>공감(G): ${answers.G}</p>
-    <p>맞섬(T): ${answers.T}</p>
-    <p>회피/균형(A): ${answers.A}</p>
-  `;
+  document.getElementById("progress").textContent = "";
+  document.getElementById("question").textContent = "테스트 완료!";
+  document.getElementById("options").innerHTML = "<p>결과 계산 중...</p>";
+
+  // 👉 여기에 angels.json 연동 or 추천 로직 추가
 }
 
-// 페이지 로드 시 실행
-window.onload = loadQuestions;
+// ✅ 초기 실행
+loadQuestions();
