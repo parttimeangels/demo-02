@@ -1,18 +1,18 @@
 body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: #f5f6fa;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
   color: #333;
   margin: 0;
-  padding: 0;
+  padding: 20px;
 }
 
 .container {
-  max-width: 800px;
-  margin: 40px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 h1 {
@@ -20,47 +20,40 @@ h1 {
   margin-bottom: 20px;
 }
 
-.question {
-  margin: 20px 0;
+.question-block {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
-.options {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
+.question-block p {
+  margin-bottom: 8px;
+  font-weight: bold;
 }
 
-.options label {
-  flex: 1;
-  text-align: center;
-  font-size: 14px;
+label {
+  margin-right: 10px;
 }
 
-#submitBtn {
+button {
   display: block;
-  margin: 30px auto;
-  padding: 12px 24px;
+  margin: 20px auto;
+  padding: 10px 20px;
   font-size: 16px;
-  background: #4a69bd;
-  color: white;
+  background: #4CAF50;
+  color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-#submitBtn:hover {
-  background: #1e3799;
+button:hover {
+  background: #45a049;
 }
 
 #result {
   margin-top: 30px;
-  padding: 20px;
-  background: #f1f2f6;
+  padding: 15px;
+  background: #f0f8ff;
   border-radius: 8px;
-}
-
-#result strong {
-  font-size: 20px;
-  display: block;
-  margin-bottom: 10px;
 }
