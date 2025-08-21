@@ -107,15 +107,19 @@ function calculateResult() {
   }
 
   // 결과 표시
-  fetch("angels.json")
-    .then(res => res.json())
-    .then(data => {
-      const angel = data.find(a => a.type === resultType);
-      document.getElementById("result").innerHTML = `
-        <h2><b>${angel.title}</b></h2>
-        <p>${angel.description}</p>
-        <p><strong>키워드:</strong> ${angel.keywords}</p>
-        <p><strong>성장 방향:</strong> ${angel.growth}</p>
-      `;
-    });
+ fetch('angels.json')
+  .then(response => response.json())
+  .then(data => {
+    const userType = getFinalType(); // 예: "GT", "GTA" 등
+    const result = data[userType];
+
+    if (result) {
+      document.getElementById('resultTitle').innerText = result.title;
+      document.getElementById('resultDescription').innerText = result.description;
+      document.getElementById('resultKeywords').innerText = result.keywords.join(', ');
+      document.getElementById('resultGrowth').innerText = result.growth;
+    } else {
+      console.error("해당 유형이 angels.json에 없습니다.");
+    }
+  });
 }
