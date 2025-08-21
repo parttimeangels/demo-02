@@ -1,107 +1,121 @@
-// 질문 배열 (각 문항을 문자열로 저장)
+// 질문 리스트 (30문항)
 const questions = [
-  "나는 다른 사람의 부탁을 잘 들어주는 편이다.",
-  "불편한 이야기도 직설적으로 말하는 편이다.",
-  "상대방이 말하지 않아도 감정을 눈치챈다.",
-  "갈등 상황에서 중재하려는 태도가 많다.",
-  "다른 사람의 고민을 끝까지 들어줄 수 있다.",
-  "상대가 힘들어할 때 대신 앞에 나서는 편이다.",
-  "나는 관계 속에서 안정감을 주려 한다.",
-  "상대가 회피하는 문제라도 직면하게 돕는다.",
-  "상대방이 기대는 것을 부담스럽게 느낀다.",
-  "나는 내 의견을 강하게 주장하는 편이다.",
-  "침묵 속에서도 상대에게 지지를 줄 수 있다.",
-  "타협을 통해 갈등을 줄이는 편이다.",
-  "상대가 두려워하는 문제 앞에 방패가 되어준다.",
-  "나는 상대방의 자기기만을 꿰뚫어본다.",
-  "상대의 속도에 맞추어 조율하려고 한다."
+  "누군가 힘들다고 털어놓으면, 나는 자연스럽게 들어주고 위로하려 한다.",
+  "관계에서 갈등이 생기면, 상대방을 이해하려는 태도를 먼저 가진다.",
+  "친밀한 관계가 불편하더라도, 상대가 외로울까 봐 곁을 지켜준다.",
+  "타인의 부탁을 거절하기보다는 웬만하면 들어주려 한다.",
+  "상대방이 인정해주지 않으면, 내 가치가 줄어든 것처럼 느낀다.",
+  "상대가 기뻐하면 나도 덩달아 기뻐지고, 그 감정에 크게 영향을 받는다.",
+  "내 감정을 드러내기보다는, 상대의 감정을 먼저 살피고 맞춘다.",
+  "불공정한 상황을 보면, 불편하더라도 바로 문제를 지적한다.",
+  "상대가 나를 얕잡아본다고 느끼면, 강하게 반응한다.",
+  "갈등이 생겼을 때 피하기보다는, 끝까지 논리적으로 따지고 싶다.",
+  "대화에서 솔직한 직언을 중요하게 생각한다.",
+  "타인의 눈치를 보느니, 차라리 내 주장을 분명히 밝힌다.",
+  "상황을 주도하지 못하면 답답해지고 불안하다.",
+  "내가 옳다고 확신할 때는 타협보다는 관철시키려 한다.",
+  "불편한 상황에 휘말리기보다는 조용히 물러난다.",
+  "갈등이 생기면, 내가 참으면 해결된다고 생각한다.",
+  "모임에서 말하기보다는 듣는 편이 더 편하다.",
+  "내 감정을 드러내면 오히려 불이익을 당할까 걱정된다.",
+  "큰 소란이나 다툼보다는 차라리 거리를 두는 게 낫다.",
+  "상처받을 위험이 보이면, 관계를 깊게 맺지 않는다.",
+  "피곤한 상황이 되면 스스로 단절하고 혼자 시간을 갖는다.",
+  "상대가 나에게 무리한 요구를 하면, 한 번은 들어주지만 반복되면 단호히 거절한다.",
+  "소중한 사람과의 관계에서는 갈등을 회피하지 않고 맞서 해결하려 한다.",
+  "평소에는 다정하지만, 신뢰를 깨뜨리면 강하게 대립한다.",
+  "갈등을 피하고 싶지만, 관계가 소중하면 억지로라도 붙잡으려 한다.",
+  "거절하지 못하고 받아주다가, 결국 지쳐 혼자 거리를 둔다.",
+  "겉으로는 잘 맞춰주지만, 속으로는 혼자 감정을 삼키며 멀어진다.",
+  "겉으로는 물러서는 척하지만, 속으로는 불만을 쌓아두며 날카롭게 관찰한다.",
+  "공개적으로는 피하지만, 뒤에서 차갑게 단절해버린다.",
+  "논쟁에서는 한발 빼지만, 마음속에서는 강한 반감을 오래 간직한다."
 ];
 
-// 성격유형 키 (16개 유형 중 점수 계산용)
-const types = [
-  "GG","GT","GA","TG","TT","TA","AG","AT","AA",
-  "GTG","GTA","TGA","TAG","AAG","AAT","ATA"
-];
-
-// 점수 저장
-let scores = {};
-types.forEach(t => scores[t] = 0);
+// 문항 → 성향 매핑
+const mapping = {
+  1:"G",2:"G",3:"G",4:"G",5:"G",6:"G",7:"G",
+  8:"T",9:"T",10:"T",11:"T",12:"T",13:"T",14:"T",
+  15:"A",16:"A",17:"A",18:"A",19:"A",20:"A",21:"A",
+  22:"GT",23:"GT",24:"GT",
+  25:"GA",26:"GA",27:"GA",
+  28:"TA",29:"TA",30:"TA"
+};
 
 // 질문 출력
-function renderQuiz() {
-  const quizDiv = document.getElementById("quiz");
-  quizDiv.innerHTML = "";
-
-  questions.forEach((q, index) => {
-    const qDiv = document.createElement("div");
-    qDiv.className = "question";
-    qDiv.innerHTML = `<p>${index + 1}. ${q}</p>`;
-
-    // 라디오 버튼 5개 (전혀그렇지 않다 ~ 매우 그렇다)
-    for (let i = 1; i <= 5; i++) {
-      const labelText = ["전혀 그렇지 않다","그렇지 않다","보통이다","그렇다","매우 그렇다"][i-1];
-      qDiv.innerHTML += `
-        <label>
-          <input type="radio" name="q${index}" value="${i}"> ${labelText}
-        </label>
-      `;
-    }
-
-    quizDiv.appendChild(qDiv);
-  });
-
-  // 결과보기 버튼 추가
-  const btn = document.createElement("button");
-  btn.textContent = "결과 보기";
-  btn.onclick = calculateResult;
-  quizDiv.appendChild(btn);
-}
+const questionContainer = document.getElementById("questions");
+questions.forEach((q, i) => {
+  let html = `<div class="question">
+    <p><b>${i+1}. ${q}</b></p>
+    <label><input type="radio" name="q${i+1}" value="1"> 전혀 그렇지 않다</label>
+    <label><input type="radio" name="q${i+1}" value="2"> 그렇지 않다</label>
+    <label><input type="radio" name="q${i+1}" value="3"> 보통이다</label>
+    <label><input type="radio" name="q${i+1}" value="4"> 그렇다</label>
+    <label><input type="radio" name="q${i+1}" value="5"> 매우 그렇다</label>
+  </div>`;
+  questionContainer.innerHTML += html;
+});
 
 // 결과 계산
 function calculateResult() {
-  // 점수 초기화
-  types.forEach(t => scores[t] = 0);
+  const answers = document.querySelectorAll("input[type=radio]:checked");
+  if (answers.length < questions.length) {
+    alert("모든 문항에 응답해주세요.");
+    return;
+  }
 
-  questions.forEach((q, index) => {
-    const selected = document.querySelector(`input[name="q${index}"]:checked`);
-    if (selected) {
-      const value = parseInt(selected.value);
+  let scores = { G: 0, T: 0, A: 0 };
 
-      // 단순 예시: 질문 번호별로 임의 유형에 점수 반영
-      // (실제 로직은 매핑 구조에 맞게 조정)
-      if (index % 4 === 0) scores["GG"] += value;
-      if (index % 4 === 1) scores["GT"] += value;
-      if (index % 4 === 2) scores["AA"] += value;
-      if (index % 4 === 3) scores["TT"] += value;
+  answers.forEach(ans => {
+    const qNum = parseInt(ans.name.replace("q", ""));
+    const value = parseInt(ans.value);
+    let type = mapping[qNum];
+
+    if (type.length === 1) {
+      scores[type] += value;
+    } else if (type.length === 2) {
+      scores[type[0]] += value/2;
+      scores[type[1]] += value/2;
     }
   });
 
-  // 점수 정렬
-  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const g = scores.G, t = scores.T, a = scores.A;
+  let resultType = "";
 
-  // 상위 1~3순위
-  const top1 = sorted[0];
-  const top2 = sorted[1];
-  const top3 = sorted[2];
+  const max = Math.max(g,t,a);
+  const min = Math.min(g,t,a);
 
-  // angels.json 불러오기
+  // 단일 우세
+  if ((max - min) / max > 0.2) {
+    if (max === g) resultType = "GG";
+    else if (max === t) resultType = "TT";
+    else resultType = "AA";
+  }
+  // 두 개 우세
+  else if (Math.abs(g - t) < 5 && a < g*0.8) {
+    resultType = "GT";
+  }
+  else if (Math.abs(g - a) < 5 && t < g*0.8) {
+    resultType = "GA";
+  }
+  else if (Math.abs(t - a) < 5 && g < t*0.8) {
+    resultType = "TA";
+  }
+  // 균형형
+  else {
+    resultType = "GTA";
+  }
+
+  // 결과 표시
   fetch("angels.json")
     .then(res => res.json())
     .then(data => {
-      const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = `
-        <h2>당신의 엔젤 유형은?</h2>
-        <h3>${data[top1[0]].title}</h3>
-        <p>${data[top1[0]].description}</p>
-        <p><b>키워드:</b> ${data[top1[0]].keywords.join(", ")}</p>
-        <p><b>성장 방향:</b> ${data[top1[0]].growth}</p>
-        <hr>
-        <h3>추천 엔젤</h3>
-        <p>2순위: ${data[top2[0]].title}</p>
-        <p>3순위: ${data[top3[0]].title}</p>
+      const angel = data.find(a => a.type === resultType);
+      document.getElementById("result").innerHTML = `
+        <h2><b>${angel.title}</b></h2>
+        <p>${angel.description}</p>
+        <p><strong>키워드:</strong> ${angel.keywords}</p>
+        <p><strong>성장 방향:</strong> ${angel.growth}</p>
       `;
     });
 }
-
-// 실행
-window.onload = renderQuiz;
