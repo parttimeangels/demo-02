@@ -69,12 +69,14 @@ function showResult() {
 
   // angels.json에서 해당 유형 불러오기 (줄바꿈 포함)
   const angelInfo = angels[bestType] 
-    ? `<strong>${angels[bestType].name}</strong><br>${angels[bestType].description}`
+    ? `<div class="angel-name">${angels[bestType].name}</div>
+       <div class="angel-desc">${angels[bestType].description}</div>`
     : `${bestType} 유형 엔젤`;
 
-  // HTML 출력 (줄바꿈 적용)
+  // HTML 출력 (줄바꿈 + 스타일링)
   document.getElementById("result-text").innerHTML = `당신은<br>${angelInfo}`;
 }
+
 
 // 실행
 (async function init() {
