@@ -1,119 +1,121 @@
-let currentQuestion = 0;
-let answers = [];
-let angelsData = {};
+// Google Sheets API (public JSON endpoint)
+const SHEET_ID = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
+const QUIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=quiz`;
+const TYPE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=type`;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const questionContainer = document.getElementById("question-container");
-  const nextButton = document.getElementById("next-btn");
-  const prevButton = document.getElementById("prev-btn");
-  const resultContainer = document.getElementById("result-container");
-  const headerTitle = document.getElementById("header-title");
+let quizData = [];
+let typeData = {};
+let scores = { G: 0, T: 0, A: 0 };
 
-  // 헤더 타이틀 표시
-  headerTitle.innerText = "나의 파트타임엔젤 유형은?";
+// ---------------------------
+// 1. 구글시트 fetch
+// ---------------------------
+async function fetchSheet(url) {
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(text.substr(47).slice(0, -2));
+  return json.table.rows.map(r => r.c.map(c => (c ? c.v : "")));
+}
 
-  // JSON 데이터 불러오기
-  fetch("angels.json")
-    .then((response) => response.json())
-    .then((data) => {
-      angelsData = data;
-      showQuestion();
-    });
+// ---------------------------
+// 2. 데이터 로드
+// ---------------------------
+async function loadData() {
+  const quizRows = await fetchSheet(QUIZ_URL);
+  quizData = quizRows.slice(1).map(row => ({
+    id: row[0],
+    question: row[1],
+    options: row[2]
+  }));
 
-  function showQuestion() {
-    const questions = document.querySelectorAll(".question");
-    questions.forEach((q, index) => {
-      q.style.display = index === currentQuestion ? "block" : "none";
-    });
+  const typeRows = await fetchSheet(TYPE_URL);
+  typeRows.slice(1).forEach(row => {
+    const no = row[0];
+    const type = row[1];
+    typeData[no] = type;
+  });
 
-    prevButton.style.display = currentQuestion > 0 ? "inline-block" : "none";
-    nextButton.innerText =
-      currentQuestion === questions.length - 1 ? "결과 보기" : "다음";
-    nextButton.disabled = !answers[currentQuestion];
-  }
+  renderQuiz();
+}
 
-  // 답변 선택
-  window.selectOption = function (option, event) {
-    answers[currentQuestion] = option;
+// ---------------------------
+// 3. 질문 출력
+// ---------------------------
+function renderQuiz() {
+  const container = document.getElementById("quiz-container");
+  container.innerHTML = "";
 
-    // 버튼 색상 반영
-    const options = document.querySelectorAll(
-      `#question-${currentQuestion} .option-btn`
-    );
-    options.forEach((btn) => btn.classList.remove("selected"));
-    event.target.classList.add("selected");
+  quizData.forEach(q => {
+    const div = document.createElement("div");
+    div.classList.add("question");
 
-    // 다음 버튼 활성화
-    document.getElementById("next-btn").disabled = false;
-  };
+    div.innerHTML = `
+      <p>${q.id}. ${q.question}</p>
+      <select id="q${q.id}">
+        <option value="">선택하세요</option>
+        <option value="2">매우 그렇다</option>
+        <option value="1">그렇다</option>
+        <option value="0">아니다</option>
+      </select>
+    `;
 
-  // 다음 버튼
-  nextButton.addEventListener("click", () => {
-    const questions = document.querySelectorAll(".question");
-    if (!answers[currentQuestion]) return; // 답변 없으면 이동 불가
+    container.appendChild(div);
+  });
 
-    if (currentQuestion < questions.length - 1) {
-      currentQuestion++;
-      showQuestion();
-    } else {
-      calculateResult();
+  const btn = document.createElement("button");
+  btn.innerText = "제출하기";
+  btn.onclick = calculateScore;
+  container.appendChild(btn);
+}
+
+// ---------------------------
+// 4. 점수 계산
+// ---------------------------
+function calculateScore() {
+  scores = { G: 0, T: 0, A: 0 };
+
+  quizData.forEach(q => {
+    const val = parseInt(document.getElementById(`q${q.id}`).value || 0);
+    const type = typeData[q.id];
+    if (!type) return;
+
+    if (["G", "T", "A"].includes(type)) {
+      scores[type] += val;
+    } else if (type.length === 2) {
+      const [t1, t2] = type.split("");
+      scores[t1] += val;
+      scores[t2] += val;
     }
   });
 
-  // 이전 버튼
-  prevButton.addEventListener("click", () => {
-    if (currentQuestion > 0) {
-      currentQuestion--;
-      showQuestion();
-    }
-  });
+  showResult();
+}
 
-  // 결과 계산
-  function calculateResult() {
-    let scores = {};
-    answers.forEach((answer) => {
-      scores[answer] = (scores[answer] || 0) + 1;
-    });
+// ---------------------------
+// 5. 결과 출력
+// ---------------------------
+function showResult() {
+  const total = scores.G + scores.T + scores.A;
+  const ranking = Object.entries(scores).sort((a, b) => b[1] - a[1]);
 
-    // 점수순 정렬
-    let sorted = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "<h3>결과</h3>";
 
-    // 최고 점수 유형 + 2,3위
-    let topThree = sorted.slice(0, 3);
-
-    // 결과 출력
-    questionContainer.style.display = "none";
-    nextButton.style.display = "none";
-    prevButton.style.display = "none";
-
-    resultContainer.innerHTML = "<h2>✨ 나의 엔젤 유형 결과 ✨</h2>";
-
-    topThree.forEach((type, index) => {
-      if (angelsData[type]) {
-        let angel = angelsData[type];
-
-        if (index === 0) {
-          // 최고 점수 유형
-          resultContainer.innerHTML += `
-            <div class="result-block main-result">
-              <h3>🌟 최고 점수 유형: ${angel.title}</h3>
-              <p>${angel.description}</p>
-              <p><strong>키워드:</strong> ${angel.keywords.join(", ")}</p>
-              <p><strong>성장 방향:</strong> ${angel.growth}</p>
-            </div>
-          `;
-        } else {
-          // 2, 3순위 (작은 글씨)
-          resultContainer.innerHTML += `
-            <div class="result-block sub-result">
-              <h4>${index + 1}순위: ${angel.title}</h4>
-              <p>${angel.description}</p>
-              <p><em>키워드:</em> ${angel.keywords.join(", ")}</p>
-              <p><em>성장 방향:</em> ${angel.growth}</p>
-            </div>
-          `;
-        }
-      }
-    });
+  if (ranking.length > 0) {
+    const [topType, topScore] = ranking[0];
+    const ratio = total ? ((topScore / total) * 100).toFixed(1) : 0;
+    resultDiv.innerHTML += `<p class="top">당신은 ${topType} 엔젤 유형입니다! (${ratio}%)</p>`;
   }
-});
+
+  if (ranking.length > 1) {
+    resultDiv.innerHTML += `<p class="sub">2순위: ${ranking[1][0]} (${ranking[1][1]}점)</p>`;
+  }
+  if (ranking.length > 2) {
+    resultDiv.innerHTML += `<p class="sub">3순위: ${ranking[2][0]} (${ranking[2][1]}점)</p>`;
+  }
+}
+
+// ---------------------------
+// 시작
+// ---------------------------
+loadData();
