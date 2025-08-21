@@ -1,82 +1,86 @@
-/* 컨테이너 */
 body {
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  background: #fafafa;
+  font-family: 'Apple SD Gothic Neo', sans-serif;
+  background: #f9fafc;
   color: #333;
-  text-align: center;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
 }
 
-#header-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-#question-container,
-#result-container {
-  max-width: 600px;
-  margin: 0 auto;
+#app {
+  width: 80%;
+  max-width: 700px;
   background: #fff;
-  padding: 25px;
+  padding: 2rem;
+  margin: 2rem 0;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
 
-/* 질문 */
+h1 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #2a5d9f;
+}
+
 .question {
-  font-size: 18px;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
-/* 버튼 공통 */
-.option-btn,
-#next-btn,
-#prev-btn {
-  display: inline-block;
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  padding: 12px 20px;
-  margin: 8px;
-  cursor: pointer;
+.question p {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+select {
+  padding: 0.5rem;
   border-radius: 8px;
-  font-size: 16px;
-  transition: all 0.2s ease;
+  border: 1px solid #ccc;
+  font-size: 1rem;
 }
 
-.option-btn:hover,
-#next-btn:hover,
-#prev-btn:hover {
-  background: #333;
-  color: #fff;
-}
-
-.option-btn.selected {
-  background: #333;
+button {
+  display: inline-block;
+  background: #2a5d9f;
   color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  margin: 1rem 0.3rem 0;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-/* 버튼 비활성화 */
-#next-btn:disabled {
-  background: #ddd;
-  color: #aaa;
-  cursor: not-allowed;
+button:hover {
+  background: #1d4070;
 }
 
-/* 결과 스타일 */
-.result-block {
-  margin: 20px 0;
-  text-align: left;
+#result {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-top: 1px solid #eee;
 }
 
-.main-result {
-  font-size: 18px;
+#result h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
 }
 
-.sub-result {
-  font-size: 14px;
+#result p {
+  font-size: 1rem;
+  margin: 0.4rem 0;
+}
+
+#result .top {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #2a5d9f;
+}
+
+#result .sub {
+  font-size: 0.9rem;
   color: #666;
-  margin-top: 15px;
-  padding-left: 10px;
-  border-left: 3px solid #ddd;
 }
