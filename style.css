@@ -48,6 +48,10 @@ body {
   background: #e6e6e6;
 }
 
+.option-btn.selected {
+  background-color: #4caf50;
+  color: white;
+}
 #next-btn {
   margin-top: 20px;
   padding: 12px;
