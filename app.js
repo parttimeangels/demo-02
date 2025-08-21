@@ -32,16 +32,23 @@ const questions = [
   "논쟁에서는 한발 빼지만, 마음속에서는 강한 반감을 오래 간직한다."
 ];
 
-// 문항 → 성향 매핑
-const mapping = {
-  1:"G",2:"G",3:"G",4:"G",5:"G",6:"G",7:"G",
-  8:"T",9:"T",10:"T",11:"T",12:"T",13:"T",14:"T",
-  15:"A",16:"A",17:"A",18:"A",19:"A",20:"A",21:"A",
-  22:"GT",23:"GT",24:"GT",
-  25:"GA",26:"GA",27:"GA",
-  28:"TA",29:"TA",30:"TA"
+// 문항 번호별 유형 맵핑
+const questionMapping = {
+  1: ['G'], 2: ['G'], 3: ['G'], 4: ['G'], 5: ['G'], 6: ['G'], 7: ['G'],
+  8: ['T'], 9: ['T'], 10: ['T'], 11: ['T'], 12: ['T'], 13: ['T'], 14: ['T'],
+  15: ['A'], 16: ['A'], 17: ['A'], 18: ['A'], 19: ['A'], 20: ['A'], 21: ['A'],
+  22: ['G', 'T'], 23: ['G', 'T'], 24: ['G', 'T'],
+  25: ['G', 'A'], 26: ['G', 'A'], 27: ['G', 'A'],
+  28: ['T', 'A'], 29: ['T', 'A'], 30: ['T', 'A']
 };
 
+document.getElementById("quiz-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  // 성향 점수 초기화
+  const scores = { G: 0, T: 0, A: 0 };
+
+  
 // 질문 출력
 const questionContainer = document.getElementById("questions");
 questions.forEach((q, i) => {
@@ -56,70 +63,57 @@ questions.forEach((q, i) => {
   questionContainer.innerHTML += html;
 });
 
-// 결과 계산
-function calculateResult() {
-  const answers = document.querySelectorAll("input[type=radio]:checked");
-  if (answers.length < questions.length) {
-    alert("모든 문항에 응답해주세요.");
-    return;
-  }
+// 문항별 점수 합산
+  for (let i = 1; i <= 30; i++) {
+    const value = parseInt(document.querySelector(`input[name="q${i}"]:checked`)?.value);
+    if (!value) {
+      alert(`${i}번 문항에 응답하지 않았습니다.`);
+      return;
+    }
 
-  let scores = { G: 0, T: 0, A: 0 };
-
-  answers.forEach(ans => {
-    const qNum = parseInt(ans.name.replace("q", ""));
-    const value = parseInt(ans.value);
-    let type = mapping[qNum];
-
-    if (type.length === 1) {
+    const types = questionMapping[i];
+    types.forEach(type => {
       scores[type] += value;
-    } else if (type.length === 2) {
-      scores[type[0]] += value/2;
-      scores[type[1]] += value/2;
-    }
-  });
-
-  const g = scores.G, t = scores.T, a = scores.A;
-  let resultType = "";
-
-  const max = Math.max(g,t,a);
-  const min = Math.min(g,t,a);
-
-  // 단일 우세
-  if ((max - min) / max > 0.2) {
-    if (max === g) resultType = "GG";
-    else if (max === t) resultType = "TT";
-    else resultType = "AA";
-  }
-  // 두 개 우세
-  else if (Math.abs(g - t) < 5 && a < g*0.8) {
-    resultType = "GT";
-  }
-  else if (Math.abs(g - a) < 5 && t < g*0.8) {
-    resultType = "GA";
-  }
-  else if (Math.abs(t - a) < 5 && g < t*0.8) {
-    resultType = "TA";
-  }
-  // 균형형
-  else {
-    resultType = "GTA";
+    });
   }
 
-  // 결과 표시
- fetch('angels.json')
-  .then(response => response.json())
-  .then(data => {
-    const userType = getFinalType(); // 예: "GT", "GTA" 등
-    const result = data[userType];
+  // 결과 분석
+  const sortedTypes = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const top1 = sortedTypes[0][0]; // 최다
+  const top2 = sortedTypes[1][0];
+  const top3 = sortedTypes[2][0];
 
-    if (result) {
-      document.getElementById('resultTitle').innerText = result.title;
-      document.getElementById('resultDescription').innerText = result.description;
-      document.getElementById('resultKeywords').innerText = result.keywords.join(', ');
-      document.getElementById('resultGrowth').innerText = result.growth;
-    } else {
-      console.error("해당 유형이 angels.json에 없습니다.");
-    }
-  });
-}
+  let code = top1;
+
+  // 점수 차이를 기반으로 복합 유형 결정
+  const diff12 = sortedTypes[0][1] - sortedTypes[1][1];
+  const diff23 = sortedTypes[1][1] - sortedTypes[2][1];
+
+  if (diff12 <= 3 && diff23 <= 3) {
+    code = [top1, top2, top3].sort().join(""); // GTA
+  } else if (diff12 <= 3) {
+    code = [top1, top2].sort().join(""); // 예: GT, GA, TA
+  }
+
+  // 결과 불러오기
+  fetch("angels.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const result = data[code];
+      if (!result) {
+        document.getElementById("result").innerHTML = `<p>결과를 찾을 수 없습니다. (${code})</p>`;
+        return;
+      }
+
+      document.getElementById("result").innerHTML = `
+        <h2>${result.title}</h2>
+        <p>${result.description}</p>
+        <p><strong>키워드:</strong> ${result.keywords.join(', ')}</p>
+        <p><strong>성장 방향:</strong> ${result.growth}</p>
+      `;
+    })
+    .catch((error) => {
+      console.error("결과 불러오기 실패:", error);
+      document.getElementById("result").innerHTML = `<p>결과를 불러오지 못했습니다.</p>`;
+    });
+});
