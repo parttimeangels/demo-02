@@ -49,7 +49,7 @@ body {
 }
 
 .option-btn:selected {
-  background-color: #4caf50;
+  background-color: #333333;
   color: white;
 }
 #next-btn {
