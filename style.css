@@ -48,7 +48,7 @@ body {
   background: #e6e6e6;
 }
 
-.option-btn:selected {
+.option-btn.selected {
   background-color: #333333;
   color: white;
 }
