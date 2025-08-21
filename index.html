@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>파트타임엔젤 성격유형 테스트</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Part-Time Angel Test</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>파트타임엔젤 성격유형 테스트</h1>
+    <h1>당신에게 어울리는 엔젤 유형은?</h1>
     <form id="quizForm">
       <div id="questions"></div>
-      <button type="button" onclick="calculateResult()">결과 보기</button>
+      <button type="submit">결과 보기</button>
     </form>
-    <div id="result"></div>
+    <div id="result" style="display:none;">
+      <h2>당신의 엔젤 유형</h2>
+      <h3 id="angelTitle"></h3>
+      <p id="angelDesc"></p>
+      <p><strong>키워드:</strong> <span id="angelKeywords"></span></p>
+      <p><strong>성장 방향:</strong> <span id="angelGrowth"></span></p>
+    </div>
   </div>
   <script src="app.js"></script>
 </body>
