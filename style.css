@@ -52,6 +52,21 @@ body {
   background-color: #333333;
   color: white;
 }
+
+.angel-name {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-top: 8px;
+}
+
+.angel-desc {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+
 #next-btn {
   margin-top: 20px;
   padding: 12px;
