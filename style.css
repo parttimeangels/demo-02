@@ -1,82 +1,64 @@
-/* 기본 레이아웃 */
 body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: #f9f9f9;
-  margin: 0;
-  padding: 0;
+  font-family: 'Apple SD Gothic Neo', sans-serif;
+  background: #f4f4f9;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  margin: 0;
 }
 
-/* 퀴즈 박스 */
-.quiz-box {
+#app {
   width: 90%;
   max-width: 600px;
   background: white;
+  padding: 20px;
   border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* 진행률 */
-.progress-text {
-  font-size: 14px;
-  font-weight: 500;
-  color: #888;
+#question-number {
+  font-size: 18px;
   margin-bottom: 10px;
+  color: #666;
 }
 
-/* 질문 텍스트 */
-.question-text {
+#question-text {
   font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 25px;
-  line-height: 1.5;
-}
-
-/* 옵션 버튼 */
-.options-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.option-btn {
-  background: #f1f1f1;
-  border: none;
-  border-radius: 8px;
-  padding: 14px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.option-btn:hover {
-  background: #007bff;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-.option-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-/* 결과 화면 */
-#quiz-container h2 {
-  font-size: 24px;
   margin-bottom: 20px;
 }
 
-#quiz-container pre {
-  text-align: left;
-  background: #f7f7f7;
-  padding: 15px;
+#options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-btn {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 14px;
-  overflow-x: auto;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option-btn:hover {
+  background: #e6e6e6;
+}
+
+#next-btn {
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+#result-container {
+  text-align: center;
 }
