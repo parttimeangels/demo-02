@@ -2,30 +2,28 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>파트타임엔젤 테스트</title>
+  <title>나의 파트타임엔젤 유형은?</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app">
-    <div id="quiz-container">
-      <h2 id="question-number"></h2>
-      <p id="question-text"></p>
-      <div id="options">
-        <button class="option-btn" data-score="3">매우 그렇다</button>
-        <button class="option-btn" data-score="2">그렇다</button>
-        <button class="option-btn" data-score="1">아니다</button>
-        <button class="option-btn" data-score="0">전혀 아니다</button>
+  <header>
+    <h1>나의 파트타임엔젤 유형은?</h1>
+  </header>
+  <main id="quiz-container">
+    <div id="question-box">
+      <p id="question"></p>
+      <div id="options"></div>
+      <div class="buttons">
+        <button id="prev-btn">이전</button>
+        <button id="next-btn">다음</button>
       </div>
-      <button id="next-btn">다음</button>
     </div>
-    <div id="result-container" style="display:none;">
+    <div id="result-box" style="display:none;">
       <h2>결과</h2>
-      <p id="result-text"></p>
-      <button onclick="location.reload()">다시하기</button>
+      <p id="result"></p>
+      <button id="restart-btn">다시하기</button>
     </div>
-  </div>
-
-  <!-- 중요: app.js는 반드시 body 맨 아래! -->
+  </main>
   <script src="app.js"></script>
 </body>
 </html>
