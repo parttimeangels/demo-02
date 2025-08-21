@@ -1,87 +1,63 @@
 body {
-  font-family: 'Apple SD Gothic Neo', sans-serif;
-  background: #f0f4f8;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #f9f9f9;
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
 }
 
 .container {
-  max-width: 720px;
-  margin: 40px auto;
   background: #fff;
+  margin-top: 40px;
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 600px;
+  width: 90%;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  color: #2c3e50;
-}
-
-.question {
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
+  font-size: 1.8rem;
   color: #333;
 }
 
-select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #444;
 }
 
-#submitBtn {
+button {
   display: block;
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 8px;
-  background: #4a90e2;
+  margin: 10px 0;
+  padding: 14px;
+  background: #0078ff;
   color: white;
-  cursor: pointer;
-}
-
-#submitBtn:hover {
-  background: #357ab7;
-}
-
-#result {
-  margin-top: 30px;
-}
-
-.result-card {
-  border: 1px solid #ddd;
+  border: none;
   border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 15px;
-  background: #fff;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.result-card.first {
-  border: 2px solid #4a90e2;
-  background: #f5f9ff;
+button:hover {
+  background: #005fcc;
 }
 
-.result-card h3 {
-  margin: 0 0 8px;
-  font-size: 1.2em;
-  color: #2c3e50;
-}
-
-.result-card p {
-  font-size: 0.95em;
+p {
+  margin-top: 15px;
+  line-height: 1.6;
   color: #555;
-  margin: 6px 0;
+}
+
+em {
+  color: #0078ff;
+  font-style: normal;
+  font-weight: bold;
 }
