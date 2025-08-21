@@ -1,4 +1,3 @@
-// 질문 리스트 (30문항)
 const questions = [
   "누군가 힘들다고 털어놓으면, 나는 자연스럽게 들어주고 위로하려 한다.",
   "관계에서 갈등이 생기면, 상대방을 이해하려는 태도를 먼저 가진다.",
@@ -32,88 +31,71 @@ const questions = [
   "논쟁에서는 한발 빼지만, 마음속에서는 강한 반감을 오래 간직한다."
 ];
 
-// 문항 번호별 유형 맵핑
-const questionMapping = {
-  1: ['G'], 2: ['G'], 3: ['G'], 4: ['G'], 5: ['G'], 6: ['G'], 7: ['G'],
-  8: ['T'], 9: ['T'], 10: ['T'], 11: ['T'], 12: ['T'], 13: ['T'], 14: ['T'],
-  15: ['A'], 16: ['A'], 17: ['A'], 18: ['A'], 19: ['A'], 20: ['A'], 21: ['A'],
-  22: ['G', 'T'], 23: ['G', 'T'], 24: ['G', 'T'],
-  25: ['G', 'A'], 26: ['G', 'A'], 27: ['G', 'A'],
-  28: ['T', 'A'], 29: ['T', 'A'], 30: ['T', 'A']
-};
+const mappings = [
+  "G","G","G","G","G","G","G",
+  "T","T","T","T","T","T","T",
+  "A","A","A","A","A","A","A",
+  "GT","GT","GT",
+  "GA","GA","GA",
+  "TA","TA","TA"
+];
 
-document.getElementById("quiz-form").addEventListener("submit", function (e) {
-  e.preventDefault();
+const scores = { G: 0, T: 0, A: 0 };
 
-  // 성향 점수 초기화
-  const scores = { G: 0, T: 0, A: 0 };
+window.onload = () => {
+  const quizDiv = document.getElementById("questions");
 
-  
-// 질문 출력
-const questionContainer = document.getElementById("questions");
-questions.forEach((q, i) => {
-  let html = `<div class="question">
-    <p><b>${i+1}. ${q}</b></p>
-    <label><input type="radio" name="q${i+1}" value="1"> 전혀 그렇지 않다</label>
-    <label><input type="radio" name="q${i+1}" value="2"> 그렇지 않다</label>
-    <label><input type="radio" name="q${i+1}" value="3"> 보통이다</label>
-    <label><input type="radio" name="q${i+1}" value="4"> 그렇다</label>
-    <label><input type="radio" name="q${i+1}" value="5"> 매우 그렇다</label>
-  </div>`;
-  questionContainer.innerHTML += html;
-});
+  questions.forEach((q, idx) => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <p>${idx + 1}. ${q}</p>
+      <label><input type="radio" name="q${idx}" value="1" required> 전혀 그렇지 않다</label>
+      <label><input type="radio" name="q${idx}" value="2"> 그렇지 않다</label>
+      <label><input type="radio" name="q${idx}" value="3"> 보통이다</label>
+      <label><input type="radio" name="q${idx}" value="4"> 그렇다</label>
+      <label><input type="radio" name="q${idx}" value="5"> 매우 그렇다</label>
+    `;
+    quizDiv.appendChild(div);
+  });
 
-// 문항별 점수 합산
-  for (let i = 1; i <= 30; i++) {
-    const value = parseInt(document.querySelector(`input[name="q${i}"]:checked`)?.value);
-    if (!value) {
-      alert(`${i}번 문항에 응답하지 않았습니다.`);
-      return;
+  document.getElementById("quizForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    scores.G = 0; scores.T = 0; scores.A = 0;
+
+    questions.forEach((_, idx) => {
+      const val = parseInt(document.querySelector(`input[name="q${idx}"]:checked`).value);
+      const map = mappings[idx];
+
+      if (map.length === 1) {
+        scores[map] += val;
+      } else {
+        map.split("").forEach(k => scores[k] += val * 0.5);
+      }
+    });
+
+    let sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const diff1 = sorted[0][1] - sorted[1][1];
+    const diff2 = sorted[1][1] - sorted[2][1];
+
+    let resultKey = "";
+    if (diff1 >= 5) {
+      resultKey = sorted[0][0] + sorted[0][0];
+    } else if (diff2 <= 2) {
+      resultKey = sorted.map(x => x[0]).join("");
+    } else {
+      resultKey = sorted[0][0] + sorted[1][0];
     }
 
-    const types = questionMapping[i];
-    types.forEach(type => {
-      scores[type] += value;
-    });
-  }
+    const response = await fetch("angels.json");
+    const data = await response.json();
+    const angel = data[resultKey];
 
-  // 결과 분석
-  const sortedTypes = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  const top1 = sortedTypes[0][0]; // 최다
-  const top2 = sortedTypes[1][0];
-  const top3 = sortedTypes[2][0];
+    document.getElementById("angelTitle").innerText = angel.title;
+    document.getElementById("angelDesc").innerText = angel.description;
+    document.getElementById("angelKeywords").innerText = angel.keywords.join(", ");
+    document.getElementById("angelGrowth").innerText = angel.growth;
 
-  let code = top1;
-
-  // 점수 차이를 기반으로 복합 유형 결정
-  const diff12 = sortedTypes[0][1] - sortedTypes[1][1];
-  const diff23 = sortedTypes[1][1] - sortedTypes[2][1];
-
-  if (diff12 <= 3 && diff23 <= 3) {
-    code = [top1, top2, top3].sort().join(""); // GTA
-  } else if (diff12 <= 3) {
-    code = [top1, top2].sort().join(""); // 예: GT, GA, TA
-  }
-
-  // 결과 불러오기
-  fetch("angels.json")
-    .then((response) => response.json())
-    .then((data) => {
-      const result = data[code];
-      if (!result) {
-        document.getElementById("result").innerHTML = `<p>결과를 찾을 수 없습니다. (${code})</p>`;
-        return;
-      }
-
-      document.getElementById("result").innerHTML = `
-        <h2>${result.title}</h2>
-        <p>${result.description}</p>
-        <p><strong>키워드:</strong> ${result.keywords.join(', ')}</p>
-        <p><strong>성장 방향:</strong> ${result.growth}</p>
-      `;
-    })
-    .catch((error) => {
-      console.error("결과 불러오기 실패:", error);
-      document.getElementById("result").innerHTML = `<p>결과를 불러오지 못했습니다.</p>`;
-    });
-});
+    document.getElementById("result").style.display = "block";
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  });
+};
