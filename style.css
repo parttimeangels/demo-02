@@ -1,86 +1,87 @@
 body {
   font-family: 'Apple SD Gothic Neo', sans-serif;
-  background: #f9fafc;
-  color: #333;
+  background: #f0f4f8;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
 }
 
-#app {
-  width: 80%;
-  max-width: 700px;
+.container {
+  max-width: 720px;
+  margin: 40px auto;
   background: #fff;
-  padding: 2rem;
-  margin: 2rem 0;
+  padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 h1 {
   text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
-  color: #2a5d9f;
+  margin-bottom: 20px;
+  color: #2c3e50;
 }
 
 .question {
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
-.question p {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
 }
 
 select {
-  padding: 0.5rem;
-  border-radius: 8px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  font-size: 1rem;
+  font-size: 14px;
 }
 
-button {
-  display: inline-block;
-  background: #2a5d9f;
-  color: white;
+#submitBtn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  margin-top: 20px;
   border: none;
-  padding: 0.7rem 1.2rem;
-  margin: 1rem 0.3rem 0;
   border-radius: 8px;
-  font-size: 1rem;
+  background: #4a90e2;
+  color: white;
   cursor: pointer;
-  transition: background 0.3s;
 }
 
-button:hover {
-  background: #1d4070;
+#submitBtn:hover {
+  background: #357ab7;
 }
 
 #result {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  border-top: 1px solid #eee;
+  margin-top: 30px;
 }
 
-#result h3 {
-  font-size: 1.4rem;
-  margin-bottom: 1rem;
+.result-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: #fff;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
 }
 
-#result p {
-  font-size: 1rem;
-  margin: 0.4rem 0;
+.result-card.first {
+  border: 2px solid #4a90e2;
+  background: #f5f9ff;
 }
 
-#result .top {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #2a5d9f;
+.result-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.2em;
+  color: #2c3e50;
 }
 
-#result .sub {
-  font-size: 0.9rem;
-  color: #666;
+.result-card p {
+  font-size: 0.95em;
+  color: #555;
+  margin: 6px 0;
 }
