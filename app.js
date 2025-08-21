@@ -1,102 +1,69 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const sheetId = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
-
-// 시트별 API 주소
 const sheetId = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
 const apiQuiz = `https://opensheet.elk.sh/${sheetId}/quiz`;
 const apiType = `https://opensheet.elk.sh/${sheetId}/type`;
 const apiScore = `https://opensheet.elk.sh/${sheetId}/score`;
 const apiResponse = `https://opensheet.elk.sh/${sheetId}/response`;
 
-  let questions = [];
-  let answers = [];
-  let currentQuestion = 0;
-  let typeTable = [];
-  let scoreMap = { G: 0, T: 0, A: 0 };
+let questions = [];
+let currentQuestion = 0;
+let answers = [];
 
-  // 1️⃣ 데이터 불러오기
-  Promise.all([fetch(apiQuiz), fetch(apiType), fetch(apiScore)])
-    .then(responses => Promise.all(responses.map(res => res.json())))
-    .then(([quizData, typeData, scoreData]) => {
-      questions = quizData.map(row => ({
-        id: row.id,
-        question: row.questions,
-        options: row.options
-          ? JSON.parse(row.options)
-          : ["전혀 아니다", "아니다", "그렇다", "매우 그렇다"]
-      }));
+// 질문 불러오기
+async function loadQuestions() {
+  try {
+    const res = await fetch(apiQuiz);
+    const data = await res.json();
 
-      typeTable = typeData;
+    // 시트에서 받아온 데이터를 배열에 저장
+    questions = data.map(q => ({
+      id: q.id,
+      text: q.questions,
+      options: ["전혀 아니다", "아니다", "그렇다", "매우 그렇다"] // 옵션 고정
+    }));
 
-      // score 시트 → {질문id, opt번호, 성향} 구조로 변환
-      // 예: { id: "1", opt1: "G", opt2: "T", opt3: "A", opt4: "G" }
-      scoreTable = scoreData;
+    showQuestion();
+  } catch (error) {
+    console.error("질문 불러오기 실패:", error);
+    document.getElementById("question").textContent = "질문을 불러오지 못했습니다.";
+  }
+}
 
+// 현재 질문 표시
+function showQuestion() {
+  if (currentQuestion >= questions.length) {
+    showResult();
+    return;
+  }
+
+  const q = questions[currentQuestion];
+  document.getElementById("progress").textContent = `${currentQuestion + 1} / ${questions.length}`;
+  document.getElementById("question").textContent = q.text;
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = opt;
+    btn.classList.add("option-btn");
+    btn.addEventListener("click", () => {
+      answers.push({ id: q.id, answer: i + 1 });
+      currentQuestion++;
       showQuestion();
-    })
-    .catch(err => {
-      document.getElementById("quiz").innerHTML = `<p>데이터 로딩 실패: ${err}</p>`;
     });
+    optionsDiv.appendChild(btn);
+  });
+}
 
-  // 2️⃣ 질문 출력
-  function showQuestion() {
-    const container = document.getElementById("quiz");
+// 결과 표시
+function showResult() {
+  document.getElementById("quiz-box").style.display = "none";
+  document.getElementById("result-box").style.display = "block";
 
-    if (currentQuestion >= questions.length) {
-      finishQuiz();
-      return;
-    }
+  // 단순 출력 (나중에 score sheet 계산 연결 가능)
+  document.getElementById("result").textContent = 
+    `총 ${answers.length}개의 질문에 응답했습니다.`;
+}
 
-    const q = questions[currentQuestion];
-    container.innerHTML = `
-      <p class="small-text">질문 ${q.id} / ${questions.length}</p>
-      <h3>${q.question}</h3>
-      <div>
-        ${q.options.map((opt, i) => `
-          <button class="option-btn" data-index="${i}">${opt}</button>
-        `).join("")}
-      </div>
-    `;
-
-    document.querySelectorAll(".option-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const choice = Number(e.target.dataset.index) + 1; // opt1~opt4
-        answers.push({ id: q.id, choice });
-        addScore(q.id, choice);
-        currentQuestion++;
-        showQuestion();
-      });
-    });
-  }
-
-  // 3️⃣ 점수 누적
-  function addScore(qid, choice) {
-    const row = scoreTable.find(s => s.id === qid);
-    if (!row) return;
-
-    const key = `opt${choice}`;
-    const trait = row[key]; // G / T / A
-    if (trait && scoreMap[trait] !== undefined) {
-      scoreMap[trait] += 1; // 단순히 +1 (혹은 점수 가중치 적용 가능)
-    }
-  }
-
-  // 4️⃣ 최종 결과
-  function finishQuiz() {
-    const container = document.getElementById("quiz");
-
-    // 가장 높은 점수 성향 찾기
-    const maxTrait = Object.keys(scoreMap).reduce((a, b) =>
-      scoreMap[a] >= scoreMap[b] ? a : b
-    );
-
-    const matchedType = typeTable.find(t => t.type === maxTrait);
-
-    container.innerHTML = `
-      <h2>당신의 성향: ${maxTrait}</h2>
-      <p>G=${scoreMap.G}, T=${scoreMap.T}, A=${scoreMap.A}</p>
-      <h3>${matchedType?.name || ""}</h3>
-      <p>${matchedType?.description || ""}</p>
-    `;
-  }
-});
+// 실행
+loadQuestions();
