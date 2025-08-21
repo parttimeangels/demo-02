@@ -34,6 +34,31 @@ body {
   gap: 10px;
 }
 
+#options button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#options button:hover {
+  background: #eee;
+}
+
+#options button.selected {
+  background: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.buttons {
+  margin-top: 20px;
+}
 .option-btn {
   padding: 12px;
   font-size: 16px;
