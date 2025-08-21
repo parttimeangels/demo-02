@@ -1,39 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>나는 어떤 유형의 엔젤일까?</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나는 어떤 유형의 파트타임엔젤일까?</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="quiz" class="container">
-    <header class="header">
-      <h1>나는 어떤 유형의 엔젤일까?</h1>
-      <p class="lead">발벗고 도와주거나, 묵묵히 바라보거나, 대신 맞서거나</p>
-    </header>
-
-    <!-- 질문 영역 -->
-    <section id="question-container">
-      <h2 id="question-text">질문이 여기에 표시됩니다</h2>
-      <div id="choices"></div>
-      <div class="navigation">
-        <button id="prevBtn">이전</button>
-        <button id="nextBtn">다음</button>
-      </div>
-    </section>
-
-    <!-- 결과 영역 -->
-    <section id="result-container" class="hidden">
-      <h2>당신의 엔젤 유형은?</h2>
-      <div id="result"></div>
-      <canvas id="resultChart"></canvas>
-      <button id="restartBtn">다시하기</button>
-    </section>
-  </main>
-
-  <!-- 외부 스크립트만 -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <div id="quiz-container" class="quiz-box">
+    <div id="progress" class="progress-text">0 / 0</div>
+    <div id="question" class="question-text">질문이 여기에 표시됩니다.</div>
+    <div id="options" class="options-container"></div>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
