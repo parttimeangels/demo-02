@@ -84,7 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch("angels.json");
       const data = await res.json();
-      const angel = data[type];
+      const angel = data.find(a => a.type === type);
+
 
       if (angel) {
         document.getElementById("angelTitle").textContent = angel.title;
