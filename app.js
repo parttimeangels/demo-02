@@ -1,10 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   const sheetId = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
 
-  // 시트별 API 주소
-  const apiQuiz = `https://opensheet.elk.sh/${sheetId}/quiz`;
-  const apiType = `https://opensheet.elk.sh/${sheetId}/type`;
-  const apiScore = `https://opensheet.elk.sh/${sheetId}/score`;
+// 시트별 API 주소
+const sheetId = "1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE";
+const apiQuiz = `https://opensheet.elk.sh/${sheetId}/quiz`;
+const apiType = `https://opensheet.elk.sh/${sheetId}/type`;
+const apiScore = `https://opensheet.elk.sh/${sheetId}/score`;
+const apiResponse = `https://opensheet.elk.sh/${sheetId}/response`;
 
   let questions = [];
   let answers = [];
