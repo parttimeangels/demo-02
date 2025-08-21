@@ -2,15 +2,27 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>나는 어떤 유형의 파트타임엔젤일까?</title>
+  <title>파트타임엔젤 테스트</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="quiz-container" class="quiz-box">
-    <div id="progress" class="progress-text">0 / 0</div>
-    <div id="question" class="question-text">질문이 여기에 표시됩니다.</div>
-    <div id="options" class="options-container"></div>
+  <div id="app">
+    <div id="quiz-container">
+      <h2 id="question-number"></h2>
+      <p id="question-text"></p>
+      <div id="options">
+        <button class="option-btn" data-score="3">매우 그렇다</button>
+        <button class="option-btn" data-score="2">그렇다</button>
+        <button class="option-btn" data-score="1">아니다</button>
+        <button class="option-btn" data-score="0">전혀 아니다</button>
+      </div>
+      <button id="next-btn">다음</button>
+    </div>
+    <div id="result-container" style="display:none;">
+      <h2>결과</h2>
+      <p id="result-text"></p>
+      <button onclick="location.reload()">다시하기</button>
+    </div>
   </div>
   <script src="app.js"></script>
 </body>
