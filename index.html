@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>파트타임엔젤 테스트</title>
-  <link rel="stylesheet" href="style.css">
-</head>
 <body>
-  <div id="app">
-    <h1>나는 어떤 엔젤 유형일까? </h1>
-    <div id="quiz-container"></div>
+  <div class="container">
+    <h1>나의 파트타임엔젤 유형은?</h1>
+    <form id="quizForm">
+      <div id="quizContainer"></div>
+      <div class="navigation">
+        <button type="button" id="prevBtn">이전</button>
+        <button type="button" id="nextBtn">다음</button>
+        <button type="submit" id="submitBtn" style="display:none;">제출하기</button>
+      </div>
+    </form>
     <div id="result"></div>
   </div>
   <script src="app.js"></script>
 </body>
-</html>
