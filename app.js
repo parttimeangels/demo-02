@@ -1,124 +1,87 @@
-let currentQuestionIndex = 0;
-let questions = [];
-let answers = [];
+let quiz = [];
+let angels = {};
 
-// 점수 계산용
-let scoreMatrix = [];
-let types = [];
+async function loadData() {
+  // 질문 (quiz.json)
+  const quizRes = await fetch("quiz.json");
+  quiz = await quizRes.json();
 
-// 질문 불러오기
-async function loadQuestions() {
-  const quizUrl = "https://docs.google.com/spreadsheets/d/1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE/gviz/tq?sheet=quiz";
-  const res = await fetch(quizUrl);
-  const text = await res.text();
-  const data = JSON.parse(text.substr(47).slice(0, -2));
-  
-  questions = data.table.rows.map(r => r.c[0].v);
-  await loadScore();
-  await loadTypes();
-  renderQuestion();
+  // 엔젤 유형 (angels.json)
+  const angelsRes = await fetch("angels.json");
+  angels = await angelsRes.json();
+
+  renderQuiz();
 }
 
-// score 시트 불러오기
-async function loadScore() {
-  const scoreUrl = "https://docs.google.com/spreadsheets/d/1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE/gviz/tq?sheet=score";
-  const res = await fetch(scoreUrl);
-  const text = await res.text();
-  const data = JSON.parse(text.substr(47).slice(0, -2));
+function renderQuiz() {
+  const form = document.getElementById("quizForm");
+  form.innerHTML = "";
 
-  // score 시트는 각 문항별로 [순응, 맞섬, 회피, 균형] 가중치 들어있다고 가정
-  scoreMatrix = data.table.rows.map(r => r.c.map(c => c ? c.v : 0));
-}
+  quiz.forEach((q, idx) => {
+    const field = document.createElement("div");
+    field.classList.add("question");
 
-// type 시트 불러오기
-async function loadTypes() {
-  const typeUrl = "https://docs.google.com/spreadsheets/d/1GjR7GyIU9HdQmBirIEfjGNN1UpesJLoqp8kPwmrn1NE/gviz/tq?sheet=type";
-  const res = await fetch(typeUrl);
-  const text = await res.text();
-  const data = JSON.parse(text.substr(47).slice(0, -2));
+    field.innerHTML = `
+      <label>${idx + 1}. ${q.question}</label>
+      <select name="q${idx}">
+        <option value="">선택하세요</option>
+        <option value="3">매우 그렇다</option>
+        <option value="2">그렇다</option>
+        <option value="1">아니다</option>
+        <option value="0">전혀 아니다</option>
+      </select>
+    `;
 
-  types = data.table.rows.map(r => ({
-    id: r.c[0].v,
-    name: r.c[1].v,
-    desc: r.c[2].v,
-    job: r.c[3].v
-  }));
-}
-
-function renderQuestion() {
-  const container = document.getElementById("quizContainer");
-  container.innerHTML = "";
-
-  const qText = questions[currentQuestionIndex];
-  const div = document.createElement("div");
-  div.innerHTML = `
-    <p>${currentQuestionIndex + 1}. ${qText}</p>
-    <select id="answer">
-      <option value="">선택하세요</option>
-      <option value="3">매우 그렇다</option>
-      <option value="2">그렇다</option>
-      <option value="1">아니다</option>
-      <option value="0">전혀 아니다</option>
-    </select>
-  `;
-  container.appendChild(div);
-
-  // 이전 응답 복원
-  if (answers[currentQuestionIndex] !== undefined) {
-    document.getElementById("answer").value = answers[currentQuestionIndex];
-  }
-
-  // 버튼 표시
-  document.getElementById("prevBtn").style.display = currentQuestionIndex === 0 ? "none" : "inline-block";
-  document.getElementById("nextBtn").style.display = currentQuestionIndex === questions.length - 1 ? "none" : "inline-block";
-  document.getElementById("submitBtn").style.display = currentQuestionIndex === questions.length - 1 ? "inline-block" : "none";
-}
-
-document.getElementById("prevBtn").addEventListener("click", () => {
-  saveAnswer();
-  currentQuestionIndex--;
-  renderQuestion();
-});
-
-document.getElementById("nextBtn").addEventListener("click", () => {
-  saveAnswer();
-  currentQuestionIndex++;
-  renderQuestion();
-});
-
-document.getElementById("quizForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  saveAnswer();
-  calculateResult();
-});
-
-function saveAnswer() {
-  const val = document.getElementById("answer").value;
-  if (val !== "") {
-    answers[currentQuestionIndex] = parseInt(val);
-  }
+    form.appendChild(field);
+  });
 }
 
 function calculateResult() {
-  let scores = [0, 0, 0, 0]; // 순응, 맞섬, 회피, 균형
+  const form = document.getElementById("quizForm");
+  const formData = new FormData(form);
 
-  answers.forEach((ans, idx) => {
-    if (ans !== undefined) {
-      for (let t = 0; t < 4; t++) {
-        scores[t] += ans * (scoreMatrix[idx][t] || 0);
-      }
+  let scores = { A: 0, G: 0, H: 0, T: 0 }; // Angel 유형
+  let answered = 0;
+
+  quiz.forEach((q, idx) => {
+    const value = formData.get(`q${idx}`);
+    if (value !== "") {
+      answered++;
+      scores[q.type] += parseInt(value, 10);
     }
   });
 
-  // 가장 높은 점수 index 찾기
-  let maxIndex = scores.indexOf(Math.max(...scores));
-  let resultType = types[maxIndex];
+  if (answered < quiz.length) {
+    alert("모든 질문에 답해주세요!");
+    return;
+  }
 
-  document.getElementById("result").innerHTML = `
-    <h2>당신은 ${resultType.name} 입니다!</h2>
-    <p>${resultType.desc}</p>
-    <p><b>추천 직무:</b> ${resultType.job}</p>
-  `;
+  showResult(scores);
 }
 
-loadQuestions();
+function showResult(scores) {
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const total = sorted.reduce((sum, [, val]) => sum + val, 0);
+
+  const top3 = sorted.slice(0, 3);
+  const resultContainer = document.getElementById("result");
+  resultContainer.innerHTML = "<h2>결과</h2>";
+
+  top3.forEach(([type, score], idx) => {
+    const percentage = ((score / total) * 100).toFixed(1);
+    const angel = angels[type];
+
+    resultContainer.innerHTML += `
+      <div class="result-card ${idx === 0 ? 'first' : ''}">
+        <h3><b>${angel.title}</b> (${percentage}%)</h3>
+        <p>${angel.description}</p>
+        <p><strong>Keywords:</strong> ${angel.keywords.join(", ")}</p>
+        <p><strong>Growth:</strong> ${angel.growth}</p>
+      </div>
+    `;
+  });
+}
+
+document.getElementById("submitBtn").addEventListener("click", calculateResult);
+
+loadData();
