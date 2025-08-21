@@ -1,108 +1,82 @@
+/* 컨테이너 */
 body {
-  font-family: 'Apple SD Gothic Neo', sans-serif;
-  background: #f4f4f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-#app {
-  width: 90%;
-  max-width: 600px;
-  background: white;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: #fafafa;
+  color: #333;
+  text-align: center;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-#question-number {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #666;
-}
-
-#question-text {
-  font-size: 20px;
+#header-title {
+  font-size: 24px;
+  font-weight: bold;
   margin-bottom: 20px;
 }
 
-#options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+#question-container,
+#result-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-#options button {
-  display: block;
-  width: 100%;
-  margin: 8px 0;
-  padding: 12px;
+/* 질문 */
+.question {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+/* 버튼 공통 */
+.option-btn,
+#next-btn,
+#prev-btn {
+  display: inline-block;
+  background: #f0f0f0;
   border: 1px solid #ccc;
-  background: #f9f9f9;
-  border-radius: 8px;
+  padding: 12px 20px;
+  margin: 8px;
   cursor: pointer;
-  font-size: 16px;
-}
-
-#options button:hover {
-  background: #eee;
-}
-
-#options button.selected {
-  background: #4CAF50;
-  color: white;
-  border: none;
-}
-
-.buttons {
-  margin-top: 20px;
-}
-.option-btn {
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
   border-radius: 8px;
-  background: #f9f9f9;
-  cursor: pointer;
-  transition: 0.2s;
+  font-size: 16px;
+  transition: all 0.2s ease;
 }
 
-.option-btn:hover {
-  background: #e6e6e6;
+.option-btn:hover,
+#next-btn:hover,
+#prev-btn:hover {
+  background: #333;
+  color: #fff;
 }
 
 .option-btn.selected {
-  background-color: #333333;
+  background: #333;
   color: white;
 }
 
-.angel-name {
-  font-weight: bold;
-  font-size: 1.2em;
-  margin-top: 8px;
+/* 버튼 비활성화 */
+#next-btn:disabled {
+  background: #ddd;
+  color: #aaa;
+  cursor: not-allowed;
 }
 
-.angel-desc {
-  font-size: 0.9em;
+/* 결과 스타일 */
+.result-block {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.main-result {
+  font-size: 18px;
+}
+
+.sub-result {
+  font-size: 14px;
   color: #666;
-  margin-top: 4px;
-  line-height: 1.4;
-}
-
-
-#next-btn {
-  margin-top: 20px;
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  background: #4CAF50;
-  color: white;
-  cursor: pointer;
-}
-
-#result-container {
-  text-align: center;
+  margin-top: 15px;
+  padding-left: 10px;
+  border-left: 3px solid #ddd;
 }
