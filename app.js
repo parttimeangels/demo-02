@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 답변 선택
-  window.selectOption = function (option) {
+  window.selectOption = function (option, event) {
     answers[currentQuestion] = option;
 
     // 버튼 색상 반영
@@ -91,16 +91,28 @@ document.addEventListener("DOMContentLoaded", () => {
     topThree.forEach((type, index) => {
       if (angelsData[type]) {
         let angel = angelsData[type];
-        resultContainer.innerHTML += `
-          <div class="result-block" style="margin-bottom:20px;">
-            <h3>${index === 0 ? "🌟 최고 점수 유형" : index + 1 + "순위"}: ${
-          angel.title
-        }</h3>
-            <p>${angel.description}</p>
-            <p><strong>키워드:</strong> ${angel.keywords.join(", ")}</p>
-            <p><strong>성장 방향:</strong> ${angel.growth}</p>
-          </div>
-        `;
+
+        if (index === 0) {
+          // 최고 점수 유형
+          resultContainer.innerHTML += `
+            <div class="result-block main-result">
+              <h3>🌟 최고 점수 유형: ${angel.title}</h3>
+              <p>${angel.description}</p>
+              <p><strong>키워드:</strong> ${angel.keywords.join(", ")}</p>
+              <p><strong>성장 방향:</strong> ${angel.growth}</p>
+            </div>
+          `;
+        } else {
+          // 2, 3순위 (작은 글씨)
+          resultContainer.innerHTML += `
+            <div class="result-block sub-result">
+              <h4>${index + 1}순위: ${angel.title}</h4>
+              <p>${angel.description}</p>
+              <p><em>키워드:</em> ${angel.keywords.join(", ")}</p>
+              <p><em>성장 방향:</em> ${angel.growth}</p>
+            </div>
+          `;
+        }
       }
     });
   }
