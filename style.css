@@ -1,52 +1,82 @@
+/* 기본 레이아웃 */
 body {
   font-family: 'Noto Sans KR', sans-serif;
-  background-color: #f0f8ff;
+  background: #f9f9f9;
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-.container {
+/* 퀴즈 박스 */
+.quiz-box {
+  width: 90%;
   max-width: 600px;
-  margin: 80px auto;
-  padding: 30px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-}
-
-h1, h2 {
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   text-align: center;
-  color: #2a4d7d;
 }
 
-#answers button {
-  display: block;
-  width: 100%;
-  margin: 8px 0;
-  padding: 12px;
+/* 진행률 */
+.progress-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+/* 질문 텍스트 */
+.question-text {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+/* 옵션 버튼 */
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.option-btn {
+  background: #f1f1f1;
   border: none;
   border-radius: 8px;
-  background-color: #4a90e2;
-  color: white;
-  cursor: pointer;
+  padding: 14px;
   font-size: 16px;
-}
-
-#answers button:hover {
-  background-color: #357ab8;
-}
-
-#next-btn {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 20px;
-  background: #2a4d7d;
-  color: white;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-#next-btn:hover {
-  background: #1d3557;
+.option-btn:hover {
+  background: #007bff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.option-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* 결과 화면 */
+#quiz-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#quiz-container pre {
+  text-align: left;
+  background: #f7f7f7;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  overflow-x: auto;
 }
